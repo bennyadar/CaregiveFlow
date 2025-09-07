@@ -1,7 +1,7 @@
 <?php require __DIR__ . '/../layout/header.php'; ?>
 <h1 class="h4 mb-3"><?= isset($item['id']) ? 'עריכת עובד #' . (int)$item['id'] : 'עובד חדש' ?></h1>
 <form method="post" class="row g-3">
-  <h2 class="h6">פרטים כלליים ופרטי עובד</h2>
+  <h2 class="h6">פרטים כלליים ופרטי עובד</h2>   
   <div class="col-md-2">
     <label class="form-label">שם פרטי (לועזי) *</label>
     <input type="text" name="first_name" class="form-control" required value="<?= e($item['first_name'] ?? '') ?>">
@@ -152,146 +152,114 @@
       <label class="form-label">מיקוד</label>
       <input type="text" name="zipcode" class="form-control" value="<?= e($item['zipcode'] ?? '') ?>">
     </div>
+    <div class="col-md-2 form-check mt-5">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" name="is_active" id="is_active" <?= !empty($item['is_active']) ? 'checked' : '' ?>>
+        <label class="form-check-label" for="is_active">עובד פעיל</label>
+      </div>
+    </div>     
   </div>
 
   <hr class="mt-4">
   <!-- ===== Passports quick-add (Employee) ===== -->
   <h2 class="h6">דרכון (הוספה מהירה)</h2>
-    <div class="row g-3">
-      <div class="col-md-2">
-        <label class="form-label">מס׳ דרכון</label>
-        <input type="text" name="pp_passport_number" class="form-control" maxlength="20" value="">
-        <div class="form-text">השאר ריק אם אינך רוצה להוסיף דרכון עכשיו.</div>
-      </div>
-      <div class="col-md-2">
-          <label class="form-label">סוג דרכון</label>
-          <select name="pp_passport_type_code" class="form-select">
-              <option value="">— בחר —</option>
-              <?php foreach ($passport_type_codes as $type_code): ?>
-                <option value="<?= (int)$typ_code['passport_type_code'] ?>">
-                  <?= e($type_code['name_he']) ?>
-              </option>
-              <?php endforeach; ?>
-          </select>
-      </div>
-      <div class="col-md-2">
-        <label class="form-label">ארץ מנפיקה</label>
-        <select name="pp_issuing_country_code" class="form-select">
-          <option value="">-- בחר/י --</option>
-          <?php foreach ($countries as $c): ?>
-            <option value="<?= (int)$c['country_code'] ?>">
-              <?= e($c['country_code']). ' - ' .e($c['name_he']) ?>
-            </option>
-          <?php endforeach; ?>
-        </select>
-      </div>
-      <div class="col-md-2">
-        <label class="form-label">תאריך הנפקה</label>
-        <input type="date" name="pp_issue_date" class="form-control" value="">
-      </div>
-      <div class="col-md-2">
-        <label class="form-label">תוקף</label>
-        <input type="date" name="pp_expiry_date" class="form-control" value="">
-      </div>
-      <div class="col-md-2 form-check mt-5">
-        <input class="form-check-input" type="checkbox" name="pp_is_primary" id="pp_is_primary"
-              <?= empty($item['id']) ? 'checked' : '' ?>>
-        <label class="form-check-label" for="pp_is_primary">ראשי</label>
-      </div>
-    </div>
-    <div class="form-text mt-2">
-      לעדכון/ניהול דרכונים קיימים עבור העובד: 
-      <a href="index.php?r=passports/index&employee_id=<?= isset($item['id']) ? (int)$item['id'] : 0 ?>" target="_blank">ניהול דרכונים</a>
-    </div>
-  </div>
-  <!-- ===== /Passports quick-add ===== -->
-
-  <hr class="mt-4">
-  <!-- ביטוח רפואי - תאריך הפקה -->
-  <div class="col-md-2">
-    <label class="form-label">ביטוח רפואי - תאריך הפקה</label>
-    <input type="date" name="health_ins_issue_date" class="form-control"
-          value="<?= e($item['health_ins_issue_date'] ?? '') ?>">
-  </div>
-
-  <!-- ביטוח רפואי - תאריך פקיעה -->
-  <div class="col-md-2">
-    <label class="form-label">ביטוח רפואי - תאריך פקיעה</label>
-    <input type="date" name="health_ins_expiry" class="form-control"
-          value="<?= e($item['health_ins_expiry'] ?? '') ?>">
-  </div>
-
-  <!-- מת"ש - מספר מנה -->
-  <div class="col-md-2">
-    <label class="form-label">מת"ש - מספר מנה</label>
-    <input type="text" name="metash_mana_number" maxlength="20" class="form-control"
-          value="<?= e($item['metash_mana_number'] ?? '') ?>">
-  </div>
-
-  <!-- מת"ש - תאריך רישום -->
-  <div class="col-md-2">
-    <label class="form-label">מת"ש - תאריך רישום</label>
-    <input type="date" name="metash_registration_date" class="form-control"
-          value="<?= e($item['metash_registration_date'] ?? '') ?>">
-  </div>
-
-
-
-  <div class="col-md-2">
-    <label class="form-label">טלפון</label>
-    <input type="text" name="phone" class="form-control" value="<?= e($item['phone'] ?? '') ?>">
-  </div>
-  <div class="col-md-2">
-    <label class="form-label">טלפון נוסף</label>
-    <input type="text" name="phone_alt" class="form-control" value="<?= e($item['phone_alt'] ?? '') ?>">
-  </div>
-
-
-
-
-  <div class="col-md-2">
-    <label class="form-label">סוג ויזה</label>
-    <input type="text" name="visa_type" class="form-control" value="<?= e($item['visa_type'] ?? '') ?>">
-  </div>
-  <div class="col-md-2">
-    <label class="form-label">תוקף ויזה</label>
-    <input type="date" name="visa_expiry" class="form-control" value="<?= e($item['visa_expiry'] ?? '') ?>">
-  </div>
-  <div class="col-md-2">
-    <label class="form-label">מס' היתר עבודה</label>
-    <input type="text" name="work_permit_number" class="form-control" value="<?= e($item['work_permit_number'] ?? '') ?>">
-  </div>
-  <div class="col-md-2">
-    <label class="form-label">תוקף היתר עבודה</label>
-    <input type="date" name="work_permit_expiry" class="form-control" value="<?= e($item['work_permit_expiry'] ?? '') ?>">
-  </div>
-  <div class="col-md-2 d-flex align-items-end">
-    <div class="form-check">
-      <input class="form-check-input" type="checkbox" name="is_active" id="is_active" <?= !empty($item['is_active']) ? 'checked' : '' ?>>
-      <label class="form-check-label" for="is_active">פעיל</label>
-    </div>
-  </div>
-
-  <!-- ================= BAFI: שמות בעברית ומידע נוסף ================= -->
-  <hr class="mt-4">
-  <h2 class="h6">BAFI — שמות בעברית ומידע נוסף</h2>
   <div class="row g-3">
-
     <div class="col-md-2">
-      <label class="form-label">קוד ארץ (MoI)</label>
-      <select name="country_symbol_moi" class="form-select">
+      <label class="form-label">מס׳ דרכון</label>
+      <input type="text" name="pp_passport_number" class="form-control" maxlength="20" value="">
+      <div class="form-text">השאר ריק אם אינך רוצה להוסיף דרכון עכשיו.</div>
+    </div>
+    <div class="col-md-2">
+        <label class="form-label">סוג דרכון</label>
+        <select name="pp_passport_type_code" class="form-select">
+            <option value="">— בחר —</option>
+            <?php foreach ($passport_type_codes as $type_code): ?>
+              <option value="<?= (int)$type_code['passport_type_code'] ?>">
+                <?= e($type_code['name_he']) ?>
+            </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">ארץ מנפיקה</label>
+      <select name="pp_issuing_country_code" class="form-select">
         <option value="">-- בחר/י --</option>
-        <?php if (!empty($countries)) foreach ($countries as $c): ?>
-          <option value="<?= (int)$c['country_code'] ?>"
-            <?= (!empty($item['country_symbol_moi']) && (int)$item['country_symbol_moi']===(int)$c['country_code'])?'selected':'' ?>>
-            <?= e($c['name_he']) ?> (<?= (int)$c['country_code'] ?>)
+        <?php foreach ($countries as $c): ?>
+          <option value="<?= (int)$c['country_code'] ?>">
+            <?= e($c['country_code']). ' - ' .e($c['name_he']) ?>
           </option>
         <?php endforeach; ?>
       </select>
     </div>
+    <div class="col-md-2">
+      <label class="form-label">תאריך הנפקה</label>
+      <input type="date" name="pp_issue_date" class="form-control" value="">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">תוקף</label>
+      <input type="date" name="pp_expiry_date" class="form-control" value="">
+    </div>
+    <div class="col-md-2 form-check mt-5">
+      <input class="form-check-input" type="checkbox" name="pp_is_primary" id="pp_is_primary"
+            <?= empty($item['id']) ? 'checked' : '' ?>>
+      <label class="form-check-label" for="pp_is_primary">דרכון ראשי</label>
+    </div>
+  </div>
+  <div class="form-text mt-2">
+    לעדכון/ניהול דרכונים קיימים עבור העובד: 
+    <a href="index.php?r=passports/index&employee_id=<?= isset($item['id']) ? (int)$item['id'] : 0 ?>" target="_blank">ניהול דרכונים</a>
+  </div>
+  <!-- ===== /Passports quick-add ===== -->
+
+  <hr class="mt-4">
+  <!-- ===== ויזה (הוספה מהירה) ===== -->
+  <h2 class="h6 mt-3">ויזה (הוספה מהירה)</h2>
+  <div class="row g-3">
+    <div class="col-md-3">
+      <label class="form-label">מס׳ ויזה/סימוכין</label>
+      <input type="text" name="vz_visa_number" class="form-control" maxlength="40" value="">
+    <div class="form-text">השאר ריק אם אינך רוצה להוסיף ויזה עכשיו.</div>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">תאריך בקשה</label>
+      <input type="date" name="vz_request_date" class="form-control" value="">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">תאריך הנפקה</label>
+      <input type="date" name="vz_issue_date" class="form-control" value="">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">תאריך פקיעה</label>
+      <input type="date" name="vz_expiry_date" class="form-control" value="">
+    </div>
   </div>
 
-
+  <hr class="mt-4">
+  <!-- ===== ביטוח רפואי (הוספה מהירה) ===== -->
+  <h2 class="h6 mt-3">ביטוח רפואי (הוספה מהירה)</h2>
+  <div class="row g-3">
+    <div class="col-md-3">
+      <label class="form-label">מס׳ פוליסה</label>
+      <input type="text" name="ins_policy_number" class="form-control" maxlength="40" value="">
+    <div class="form-text">השאר ריק אם אינך רוצה להוסיף ביטוח עכשיו.</div>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">חברת ביטוח</label>
+      <input type="text" name="ins_insurer_name" class="form-control" maxlength="60" value="">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">תאריך בקשה</label>
+      <input type="date" name="ins_request_date" class="form-control" value="">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">תאריך הנפקה</label>
+      <input type="date" name="ins_issue_date" class="form-control" value="">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">תאריך פקיעה</label>
+      <input type="date" name="ins_expiry_date" class="form-control" value="">
+    </div>
+  </div> 
 
   <!-- ================= כתובת עובד בחו״ל (355–430) ================= -->
   <hr class="mt-4">
@@ -384,17 +352,20 @@
     </div>
   </div>
 
-  <!-- ================= BAFI: היתר ================= -->
   <hr class="mt-4">
-  <h2 class="h6">BAFI — מספר היתר</h2>
-  <div class="row g-3">
-    <div class="col-md-2">
-      <label class="form-label">מספר היתר (BAFI)</label>
-      <input type="text" name="permit_number_bafi" class="form-control" maxlength="15" value="<?= e($item['permit_number_bafi'] ?? '') ?>">
-    </div>
+  <!-- מת"ש - מספר מנה -->
+  <div class="col-md-2">
+    <label class="form-label">מת"ש - מספר מנה</label>
+    <input type="text" name="metash_mana_number" maxlength="20" class="form-control"
+          value="<?= e($item['metash_mana_number'] ?? '') ?>">
   </div>
 
-
+  <!-- מת"ש - תאריך רישום -->
+  <div class="col-md-2">
+    <label class="form-label">מת"ש - תאריך רישום</label>
+    <input type="date" name="metash_registration_date" class="form-control"
+          value="<?= e($item['metash_registration_date'] ?? '') ?>">
+  </div>
 
   <div class="col-12">
     <label class="form-label">הערות</label>
