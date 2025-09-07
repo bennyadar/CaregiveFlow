@@ -1,0 +1,119 @@
+<?php /** @var array $items, $employers, $status_codes, $type_codes; @var int $page,$pages,$total; */ ?>
+<?php require __DIR__ . '/../layout/header.php'; ?>
+<div class="container" dir="rtl">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="m-0">היתרי העסקה</h3>
+        <a class="btn btn-primary" href="?r=employment_permits/create">+ היתר חדש</a>
+    </div>
+
+    <!-- סינון -->
+    <form class="row g-2 mb-3" method="get" action="">
+        <input type="hidden" name="r" value="employment_permits">
+
+        <div class="col-md-3">
+            <label class="form-label">מעסיק</label>
+            <select name="employer_id" class="form-select">
+                <option value="">— הכל —</option>
+                <?php foreach ($employers as $r): ?>
+                    <?php $selected = ((string)$r['id'] === (string)($_GET['employer_id'] ?? '')) ? 'selected' : ''; ?>
+                    <option value="<?= e($r['id']) ?>" <?= $selected ?>>
+                        <?= e($r['last_name'].' '.$r['first_name'].' ('.($r['id_number'] ?? $r['passport_number']).')') ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">סטטוס</label>
+            <select name="status" class="form-select">
+                <option value="">— הכל —</option>
+                <?php foreach ($status_codes as $code=>$name): ?>
+                    <?php $sel = ((string)$code === (string)($_GET['status'] ?? '')) ? 'selected' : ''; ?>
+                    <option value="<?= e($code) ?>" <?= $sel ?>><?= e($name) ?></option>
+                <?php endforeach; ?>
+                <?php $selExp = ((string)($_GET['status'] ?? '') === 'expired') ? 'selected' : ''; ?>
+                <option value="expired" <?= $selExp ?>>פג</option>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">חיפוש (מס׳ היתר/הערות)</label>
+            <input type="text" name="q" class="form-control" value="<?= e($_GET['q'] ?? '') ?>">
+        </div>
+
+        <div class="col-md-2">
+            <label class="form-label">פקיעה עד</label>
+            <input type="date" name="expires_until" class="form-control" value="<?= e($_GET['expires_until'] ?? '') ?>">
+        </div>
+
+        <div class="col-md-1 d-flex align-items-end">
+            <button class="btn btn-outline-secondary w-100">סינון</button>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>מעסיק</th>
+                    <th>מס׳ היתר</th>
+                    <th>סוג</th>
+                    <th>ת. בקשה</th>
+                    <th>ת. הנפקה</th>
+                    <th>ת. פקיעה</th>
+                    <th>סטטוס</th>
+                    <th>נותרו ימים</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php foreach ($items as $row): ?>
+                <?php 
+                    $derived = EmploymentPermitService::derivedStatusCode($row['status_code'] ?? null, $row['expiry_date'] ?? null);
+                    $days    = EmploymentPermitService::daysUntilExpiry($row['expiry_date'] ?? null);
+                ?>
+                <tr>
+                    <td><?= e($row['id']) ?></td>
+                    <td>
+                        <?= e($row['last_name'].' '.$row['first_name']) ?><br>
+                        <small class="text-muted"><?= e($row['id_number'] ?? $row['passport_number'] ?? '') ?></small>
+                    </td>
+                    <td><?= e($row['permit_number']) ?></td>
+                    <td><?= e($row['type_name'] ?? ($row['permit_type_code']!==null?($type_codes[(int)$row['permit_type_code']]??''):'')) ?></td>
+                    <td><?= e($row['request_date']) ?></td>
+                    <td><?= e($row['issue_date']) ?></td>
+                    <td><?= e($row['expiry_date']) ?></td>
+                    <td>
+                        <?php if ($derived === 'expired'): ?>
+                            פג
+                        <?php else: ?>
+                            <?= e($row['status_name'] ?? ($status_codes[(int)$row['status_code']] ?? '')) ?>
+                        <?php endif; ?>
+                    </td>
+                    <td><?= is_null($days)?'—':e($days) ?></td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-secondary" href="?r=employment_permits/view&id=<?= e($row['id']) ?>">צפייה</a>
+                        <a class="btn btn-sm btn-outline-primary" href="?r=employment_permits/edit&id=<?= e($row['id']) ?>">עריכה</a>
+                        <a class="btn btn-sm btn-outline-danger" href="?r=employment_permits/delete&id=<?= e($row['id']) ?>" onclick="return confirm('למחוק?');">מחיקה</a>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+
+    <?php if ($pages > 1): ?>
+        <nav>
+            <ul class="pagination">
+                <?php for ($p=1; $p <= $pages; $p++): ?>
+                    <?php $active = ($p === $page) ? 'active' : ''; ?>
+                    <li class="page-item <?= $active ?>">
+                        <a class="page-link" href="<?= e(update_query(['page'=>$p])) ?>"><?= e($p) ?></a>
+                    </li>
+                <?php endfor; ?>
+            </ul>
+        </nav>
+    <?php endif; ?>
+</div>
+<?php require __DIR__ . '/../layout/footer.php'; ?>
