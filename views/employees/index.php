@@ -34,9 +34,9 @@
                     <th>דרכון</th>
                     <th>טלפון</th>
                     <th>מעסיק נוכחי</th>
-                    <th>דרכון - פקיעת תוקף</th>
-                    <th>ויזה - פקיעת תוקף</th>
-                    <th>ביטוח - פקיעת תוקף</th>
+                    <th>דרכון - תוקף</th>
+                    <th>ויזה - תוקף</th>
+                    <th>ביטוח - תוקף</th>
                     <th class="text-end">פעולות</th>
                 </tr>
             </thead>
@@ -91,6 +91,7 @@
                             </li>
                           </ul>
                         </div>
+                        <a class="btn btn-sm btn-outline-primary" href="?r=placements/create&employee_id=<?= e($row['id']) ?>">שיבוץ</a>
                         <a class="btn btn-sm btn-outline-danger" href="?r=employees/delete&id=<?= e($row['id']) ?>" onclick="return confirm('למחוק?');">מחיקה</a>
                     </td>
                 </tr>

@@ -16,6 +16,10 @@ class PlacementsController {
 
     public static function create(PDO $pdo) {
         require_login();
+        $selected_employee_id = null;
+        if (isset($_GET['employee_id']) && $_GET['employee_id'] !== '') {
+            $selected_employee_id = (int)$_GET['employee_id'];
+        }
         $m = new Placement($pdo);
         $cols = $m->columns();
         if (is_post()) {

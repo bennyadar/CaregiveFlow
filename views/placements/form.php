@@ -4,6 +4,7 @@ $curId = $item[$cols['id']] ?? null;
 $startVal = $item[$cols['start']] ?? '';
 $endVal = $item[$cols['end']] ?? '';
 $empSel = $item[$cols['employee_id']] ?? '';
+$empSel = $selected_employee_id ?? $item[$cols['employee_id']]  ?? '';
 $emprSel = $item[$cols['employer_id']] ?? '';
 ?>
 <h1 class="h4 mb-3"><?= $curId ? 'עריכת שיבוץ #' . (int)$curId : 'שיבוץ חדש' ?></h1>

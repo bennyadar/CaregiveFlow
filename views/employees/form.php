@@ -87,7 +87,7 @@
   <div class="col-md-2">
     <label class="form-label">שם נציג בחו"ל</label>
     <input type="text" name="representative_abroad_name" maxlength="20" class="form-control"
-          value="<?= e($item['representative_abroad_name'] ?? '') ?>">
+          value="<?= e($item['representative_abroad_name'] ?? 'NYD') ?>">
   </div>
 
   <div class="col-md-2">
