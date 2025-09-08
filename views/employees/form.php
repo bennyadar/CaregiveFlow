@@ -166,7 +166,7 @@
   <div class="row g-3">
     <div class="col-md-2">
       <label class="form-label">מס׳ דרכון</label>
-      <input type="text" name="pp_passport_number" class="form-control" maxlength="20" value="">
+      <input type="text" name="passport_number" class="form-control" maxlength="20" value="">
       <div class="form-text">השאר ריק אם אינך רוצה להוסיף דרכון עכשיו.</div>
     </div>
     <div class="col-md-2">

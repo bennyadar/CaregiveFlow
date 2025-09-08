@@ -118,100 +118,96 @@ class EmployeesController {
         $codes = new CodeTables($pdo);
         if (is_post()) {
             $m = new Employee($pdo);
-            // minimal server-side validation
-            if (empty($_POST['passport_number']) || empty($_POST['first_name']) || empty($_POST['last_name'])) {
-                flash('אנא מלא/י שדות חובה: דרכון  שם פרטי  שם משפחה', 'danger');
-            } else {
-                $id = $m->create($_POST);
-                // >>> passports quick-add on employee create
-                $pp_num = trim((string)($_POST['pp_passport_number'] ?? ''));
-                if ($pp_num !== '') {
-                    $pp_country = $_POST['pp_issuing_country_code'] ?? null;
-                    $pp_issue   = $_POST['pp_issue_date'] ?? null;
-                    $pp_expiry  = $_POST['pp_expiry_date'] ?? null;
-                    $pp_primary = !empty($_POST['pp_is_primary']) ? 1 : 0;
-                    $pp_passport_type   = $_POST['pp_passport_type_code'] ?? null;
+            $id = $m->create($_POST);
+            // >>> passports quick-add on employee create
+            $pp_num = trim((string)($_POST['passport_number'] ?? ''));
+            if ($pp_num !== '') {
+                $pp_country = $_POST['pp_issuing_country_code'] ?? null;
+                $pp_issue   = $_POST['pp_issue_date'] ?? null;
+                $pp_expiry  = $_POST['pp_expiry_date'] ?? null;
+                $pp_primary = !empty($_POST['pp_is_primary']) ? 1 : 0;
+                $pp_passport_type   = $_POST['pp_passport_type_code'] ?? null;
 
 
-                    try {
-                        $pdo->beginTransaction();
-                        if ($pp_primary) {
-                            $pdo->prepare("UPDATE employee_passports SET is_primary = 0 WHERE employee_id = ?")->execute([$id]);
-                        }
-                        $stmt = $pdo->prepare("
-                            INSERT INTO employee_passports
-                                (employee_id, passport_number, passport_type_code, country_code, issue_date, expiry_date, is_primary, notes)
-                            VALUES (?,?,?,?,?,?,?)
-                        ");
-                        $stmt->execute([$id, $pp_num, $pp_passport_type, $pp_country, $pp_issue, $pp_expiry, $pp_primary, 'created via employee form']);
-                        $pdo->commit();
-                    } catch (PDOException $e) {
-                        if ($pdo->inTransaction()) { $pdo->rollBack(); }
-                        // 1062 = duplicate key (כבר קיים אותו דרכון לאותו עובד) — לא מפיל את הזרימה
-                        if (($e->errorInfo[1] ?? null) == 1062) {
-                            flash('שימו לב: דרכון זה כבר קיים לעובד. ההוספה דולגה.', 'warning');
-                        } else {
-                            throw $e;
-                        }
+                try {
+                    $pdo->beginTransaction();
+                    if ($pp_primary) {
+                        $pdo->prepare("UPDATE employee_passports SET is_primary = 0 WHERE employee_id = ?")->execute([$id]);
+                    }
+                    $stmt = $pdo->prepare("
+                        INSERT INTO employee_passports
+                            (employee_id, passport_number, passport_type_code, country_code, issue_date, expiry_date, is_primary, notes)
+                        VALUES (?,?,?,?,?,?,?,?)
+                    ");
+                    $stmt->execute([$id, $pp_num, $pp_passport_type, $pp_country, $pp_issue, $pp_expiry, $pp_primary, 'created via employee form']);
+                    $pdo->commit();
+                } catch (PDOException $e) {
+                    if ($pdo->inTransaction()) { $pdo->rollBack(); }
+                    // 1062 = duplicate key (כבר קיים אותו דרכון לאותו עובד) — לא מפיל את הזרימה
+                    if (($e->errorInfo[1] ?? null) == 1062) {
+                        flash('שימו לב: דרכון זה כבר קיים לעובד. ההוספה דולגה.', 'warning');
+                    } else {
+                        throw $e;
                     }
                 }
-                // <<< passports quick-add
-                // === Visas quick-add ===
-                $vz_num    = trim((string)($_POST['vz_visa_number']   ?? ''));
-                $vz_req    = $_POST['vz_request_date'] ?? null;
-                $vz_issue  = $_POST['vz_issue_date']   ?? null;
-                $vz_expiry = $_POST['vz_expiry_date']  ?? null;
-                if ($vz_num !== '' || $vz_req || $vz_issue || $vz_expiry) {
-                    try {
-                        $stmt = $pdo->prepare("INSERT INTO visas
-                            (employee_id, visa_number, request_date, issue_date, expiry_date, status, notes)
-                            VALUES (:eid, :num, :req, :iss, :exp, :status, :notes)");
-                        $stmt->execute([
-                            ':eid'    => $id,
-                            ':num'    => $vz_num ?: null,
-                            ':req'    => $vz_req ?: null,
-                            ':iss'    => $vz_issue ?: null,
-                            ':exp'    => $vz_expiry ?: null,
-                            ':status' => 'requested', // ברירת מחדל לפי הסגנון במודול הוויזות
-                            ':notes'  => 'created via employee quick-add',
-                        ]);
-                    } catch (PDOException $e) {
-                        // שגיאת מפתח ייחודי (אם קיימת הגבלה) — לא מפילה את הזרימה
-                        if (($e->errorInfo[1] ?? null) != 1062) throw $e;
-                    }
-                }
-
-                // === Insurance quick-add ===
-                $ins_policy  = trim((string)($_POST['ins_policy_number']  ?? ''));
-                $ins_insurer = trim((string)($_POST['ins_insurer_name']   ?? ''));
-                $ins_req     = $_POST['ins_request_date'] ?? null;
-                $ins_issue   = $_POST['ins_issue_date']   ?? null;
-                $ins_expiry  = $_POST['ins_expiry_date']  ?? null;
-                if ($ins_policy !== '' || $ins_insurer !== '' || $ins_req || $ins_issue || $ins_expiry) {
-                    try {
-                        $stmt = $pdo->prepare("INSERT INTO employee_insurances
-                            (employee_id, policy_number, insurer_name, request_date, issue_date, expiry_date, status_code)
-                            VALUES (:eid, :pol, :ins, :req, :iss, :exp, :status)");
-                        $stmt->execute([
-                            ':eid'    => $id,
-                            ':pol'    => $ins_policy ?: null,
-                            ':ins'    => $ins_insurer ?: null,
-                            ':req'    => $ins_req ?: null,
-                            ':iss'    => $ins_issue ?: null,
-                            ':exp'    => $ins_expiry ?: null,
-                            ':status' => null, // ייגזר להצגה דרך InsuranceService::derivedStatusCode
-                        ]);
-                    } catch (PDOException $e) {
-                        if (($e->errorInfo[1] ?? null) != 1062) throw $e;
-                    }
-                }
-                flash('העובד נשמר בהצלחה!');
-                redirect('employees/edit', ['id' => $id]);
             }
+            // <<< passports quick-add
+            // === Visas quick-add ===
+            $vz_num    = trim((string)($_POST['vz_visa_number']   ?? ''));
+            $vz_req    = $_POST['vz_request_date'] ?? null;
+            $vz_issue  = $_POST['vz_issue_date']   ?? null;
+            $vz_expiry = $_POST['vz_expiry_date']  ?? null;
+            if ($vz_num !== '' || $vz_req || $vz_issue || $vz_expiry) {
+                try {
+                    $stmt = $pdo->prepare("INSERT INTO visas
+                        (employee_id, visa_number, request_date, issue_date, expiry_date, status, notes)
+                        VALUES (:eid, :num, :req, :iss, :exp, :status, :notes)");
+                    $stmt->execute([
+                        ':eid'    => $id,
+                        ':num'    => $vz_num ?: null,
+                        ':req'    => $vz_req ?: null,
+                        ':iss'    => $vz_issue ?: null,
+                        ':exp'    => $vz_expiry ?: null,
+                        ':status' => 'requested', // ברירת מחדל לפי הסגנון במודול הוויזות
+                        ':notes'  => 'created via employee quick-add',
+                    ]);
+                } catch (PDOException $e) {
+                    // שגיאת מפתח ייחודי (אם קיימת הגבלה) — לא מפילה את הזרימה
+                    if (($e->errorInfo[1] ?? null) != 1062) throw $e;
+                }
+            }
+
+            // === Insurance quick-add ===
+            $ins_policy  = trim((string)($_POST['ins_policy_number']  ?? ''));
+            $ins_insurer = trim((string)($_POST['ins_insurer_name']   ?? ''));
+            $ins_req     = $_POST['ins_request_date'] ?? null;
+            $ins_issue   = $_POST['ins_issue_date']   ?? null;
+            $ins_expiry  = $_POST['ins_expiry_date']  ?? null;
+            if ($ins_policy !== '' || $ins_insurer !== '' || $ins_req || $ins_issue || $ins_expiry) {
+                try {
+                    $stmt = $pdo->prepare("INSERT INTO employee_insurances
+                        (employee_id, policy_number, insurer_name, request_date, issue_date, expiry_date, status_code)
+                        VALUES (:eid, :pol, :ins, :req, :iss, :exp, :status)");
+                    $stmt->execute([
+                        ':eid'    => $id,
+                        ':pol'    => $ins_policy ?: null,
+                        ':ins'    => $ins_insurer ?: null,
+                        ':req'    => $ins_req ?: null,
+                        ':iss'    => $ins_issue ?: null,
+                        ':exp'    => $ins_expiry ?: null,
+                        ':status' => null, // ייגזר להצגה דרך InsuranceService::derivedStatusCode
+                    ]);
+                } catch (PDOException $e) {
+                    if (($e->errorInfo[1] ?? null) != 1062) throw $e;
+                }
+            }
+            flash('העובד נשמר בהצלחה!');
+            redirect('employees/edit', ['id' => $id]);
         }
         $item = ['is_active' => 1];
         $countries = $codes->countries();
         $maritals = $codes->marital_statuses();
+        $genders = $codes->genders();
         $cities = $codes->cities();
         $streets = [];
         $passport_type_codes = $codes->passport_type_codes();
@@ -227,7 +223,7 @@ class EmployeesController {
         if (is_post()) {
             $m->update($id, $_POST);
             // >>> passports quick-add on employee update
-            $pp_num = trim((string)($_POST['pp_passport_number'] ?? ''));
+            $pp_num = trim((string)($_POST['passport_number'] ?? ''));
             if ($pp_num !== '') {
                 $pp_country         = $_POST['pp_issuing_country_code'] ?? null;
                 $pp_issue           = $_POST['pp_issue_date'] ?? null;
