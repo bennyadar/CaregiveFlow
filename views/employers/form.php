@@ -25,21 +25,38 @@
     <input type="text" name="last_name" class="form-control" required value="<?= e($item['last_name'] ?? '') ?>">
   </div>
 
-  <div class="col-md-3">
-    <label class="form-label">טלפון</label>
-    <input type="text" name="phone" class="form-control" value="<?= e($item['phone'] ?? '') ?>">
+  <div class="col-md-2">
+    <label class="form-label">מגדר</label>
+    <select name="gender_code" class="form-select">
+      <option value="">-- בחר/י --</option>
+      <?php if (!empty($genders)) foreach ($genders as $g): ?>
+        <option value="<?= (int)$g['gender_code'] ?>"
+          <?= (!empty($item['gender_code']) && (int)$item['gender_code']===(int)$g['gender_code'])?'selected':'' ?>>
+          <?= e($g['name_he']) ?>
+        </option>
+      <?php endforeach; ?>
+    </select>
   </div>
-  <div class="col-md-3">
-    <label class="form-label">טלפון נוסף</label>
-    <input type="text" name="phone_alt" class="form-control" value="<?= e($item['phone_alt'] ?? '') ?>">
+
+  <div class="col-md-1">
+    <label class="form-label">שנת לידה</label>
+    <input type="number" name="birth_year" class="form-control" min="1900" max="<?= date('Y') ?>" value="<?= e($item['birth_year'] ?? '') ?>">
   </div>
-  <div class="col-md-3">
+
+  <!-- ================= טלפון ישראלי ================= -->
+    <div class="col-md-1">
+      <label class="form-label">קידומת</label>
+      <input type="text" name="phone_prefix_il" class="form-control" maxlength="4" value="<?= e($item['phone_prefix_il'] ?? '') ?>">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">מס' טלפון</label>
+      <input type="text" name="phone_number_il" class="form-control" maxlength="10" value="<?= e($item['phone_number_il'] ?? '') ?>">
+    </div>
+
+
+  <div class="col-md-5">
     <label class="form-label">אימייל</label>
     <input type="email" name="email" class="form-control" value="<?= e($item['email'] ?? '') ?>">
-  </div>
-  <div class="col-md-3">
-    <label class="form-label">תאריך לידה</label>
-    <input type="date" name="birth_date" class="form-control" value="<?= e($item['birth_date'] ?? '') ?>">
   </div>
 
   <div class="col-md-3">
@@ -112,65 +129,6 @@
     </div>
   </div>
   <!-- ===== /Passports quick-add ===== -->
-
-
-  <!-- ================= BAFI: מזהים ושדות נוספים ================= -->
-  <hr class="mt-4">
-  <h2 class="h6">שדות BAFI נוספים</h2>
-  <div class="row g-3">
-    <div class="col-md-3">
-      <label class="form-label">מגדר</label>
-      <select name="gender_code" class="form-select">
-        <option value="">-- בחר/י --</option>
-        <?php if (!empty($genders)) foreach ($genders as $g): ?>
-          <option value="<?= (int)$g['gender_code'] ?>"
-            <?= (!empty($item['gender_code']) && (int)$item['gender_code']===(int)$g['gender_code'])?'selected':'' ?>>
-            <?= e($g['name_he']) ?>
-          </option>
-        <?php endforeach; ?>
-      </select>
-    </div>
-
-    <div class="col-md-3">
-      <label class="form-label">שנת לידה (yyyy)</label>
-      <input type="number" name="birth_year" class="form-control" min="1900" max="<?= date('Y') ?>" value="<?= e($item['birth_year'] ?? '') ?>">
-    </div>
-  </div>
-
-  <!-- ================= טלפון ישראלי ================= -->
-  <div class="row g-3 mt-2">
-    <div class="col-md-3">
-      <label class="form-label">קידומת (IL)</label>
-      <input type="text" name="phone_prefix_il" class="form-control" maxlength="4" value="<?= e($item['phone_prefix_il'] ?? '') ?>">
-    </div>
-    <div class="col-md-3">
-      <label class="form-label">מס' טלפון (IL)</label>
-      <input type="text" name="phone_number_il" class="form-control" maxlength="10" value="<?= e($item['phone_number_il'] ?? '') ?>">
-    </div>
-  </div>
-
-  <!-- ================= BAFI: סמל ארץ (מעסיק זר) ================= -->
-  <hr class="mt-4">
-  <h2 class="h6">BAFI — סמל ארץ (מעסיק זר, 715–717)</h2>
-  <div class="row g-3">
-    <div class="col-md-3">
-      <label class="form-label">סמל ארץ (MoI)</label>
-      <select name="foreign_country_code" class="form-select">
-        <option value="">-- בחר/י --</option>
-        <?php if (!empty($countries)) foreach ($countries as $c): ?>
-          <option value="<?= (int)$c['country_code'] ?>"
-            <?= (!empty($item['foreign_country_code']) && (int)$item['foreign_country_code']===(int)$c['country_code'])?'selected':'' ?>>
-            <?= e($c['name_he']) ?> (<?= (int)$c['country_code'] ?>)
-          </option>
-        <?php endforeach; ?>
-      </select>
-    </div>
-    <div class="col-md-3">
-      <label class="form-label">שם רחוב (עברית)</label>
-      <input type="text" name="street_name_he" class="form-control" value="<?= e($item['street_name_he'] ?? '') ?>">
-    </div>
-  </div>
-
 
   <div class="col-12">
     <label class="form-label">הערות</label>

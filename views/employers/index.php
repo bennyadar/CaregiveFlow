@@ -6,7 +6,7 @@
 <form class="row g-2 mb-3" method="get">
   <input type="hidden" name="r" value="employers/index">
   <div class="col-auto">
-    <input class="form-control" name="q" value="<?= e($_GET['q'] ?? '') ?>" placeholder="חיפוש: ת"ז / שם">
+    <input class="form-control" name="q" value="<?= e($_GET['q'] ?? '') ?>" placeholder="חיפוש: ת.ז / שם">
   </div>
   <div class="col-auto">
     <button class="btn btn-outline-primary">חפש</button>
