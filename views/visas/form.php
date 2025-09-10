@@ -65,7 +65,8 @@
 
         <div class="d-flex gap-2 mt-4">
             <button class="btn btn-success">שמירה</button>
-            <a class="btn btn-outline-secondary" href="?r=visas">חזרה לרשימה</a>
+            <a class="btn btn-outline-secondary" href="?r=visas&employee_id=<?= e($_GET['employee_id']) ?>">חזרה לרשימה ויזות</a>
+            <a class="btn btn-outline-secondary" href="?r=employees/show&id=<?= e($_GET['employee_id']) ?>">חזרה לכרטיס עובד</a>
         </div>
     </form>
 </div>

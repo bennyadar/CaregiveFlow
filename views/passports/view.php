@@ -5,7 +5,8 @@
         <h3 class="m-0">פרטי דרכון #<?= e($item['id']) ?></h3>
         <div class="d-flex gap-2">
             <a class="btn btn-outline-primary" href="?r=passports/edit&id=<?= e($item['id']) ?>">עריכה</a>
-            <a class="btn btn-outline-secondary" href="?r=passports">חזרה לרשימה</a>
+            <a class="btn btn-outline-secondary" href="?r=passports&employee_id=<?= e($_GET['employee_id']) ?>">חזרה לרשימת דרכונים</a>
+            <a class="btn btn-outline-secondary" href="?r=employees/show&id=<?= e($emp['id']) ?>">חזרה לכרטיס עובד</a>
         </div>
     </div>
 

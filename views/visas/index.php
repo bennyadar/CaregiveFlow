@@ -1,9 +1,13 @@
 <?php /** @var array $items, $employees; @var int $page,$pages,$total; */ ?>
 <?php require __DIR__ . '/../layout/header.php'; ?>
 <div class="container" dir="rtl">
+
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="m-0">ויזות</h3>
-        <a class="btn btn-primary" href="?r=visas/create">+ ויזה חדשה</a>
+        <h1 class="h4 mb-0">ויזות</h1>
+        <div class="d-flex gap-2">
+            <a class="btn btn-primary" href="?r=visas/create">+ ויזה חדשה</a>
+            <a class="btn btn-outline-secondary" href="?r=employees/show&id=<?= e($_GET['employee_id']) ?>">חזרה לכרטיס עובד</a>
+        </div>
     </div>
 
     <!-- סינון -->
@@ -89,8 +93,8 @@
                     </td>
                     <td><?= is_null($days)?'—':e($days) ?></td>
                     <td class="text-end">
-                        <a class="btn btn-sm btn-outline-secondary" href="?r=visas/view&id=<?= e($row['id']) ?>">צפייה</a>
-                        <a class="btn btn-sm btn-outline-primary" href="?r=visas/edit&id=<?= e($row['id']) ?>">עריכה</a>
+                        <a class="btn btn-sm btn-outline-secondary" href="?r=visas/view&id=<?= e($row['id']) ?>&employee_id=<?= e($_GET['employee_id']) ?>">צפייה</a>
+                        <a class="btn btn-sm btn-outline-primary" href="?r=visas/edit&id=<?= e($row['id']) ?>&employee_id=<?= e($_GET['employee_id']) ?>">עריכה</a>
                         <a class="btn btn-sm btn-outline-danger" href="?r=visas/delete&id=<?= e($row['id']) ?>" onclick="return confirm('למחוק?');">מחיקה</a>
                     </td>
                 </tr>
