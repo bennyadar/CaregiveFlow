@@ -210,45 +210,13 @@ class ExportsController
             echo "No BAFI data returned for employee #{$employee_id}";
             return;
         }
-        $len = strlen($data_line);
-        if ($len !== 705) {
-            http_response_code(500);
-            echo "BAFI data line length is {$len}, expected 705. יש לעדכן את המיפוי/נתונים ולהריץ שוב.";
-            return;
-        }
 
         // 3) CONTROL line (705) בצד PHP
         $control_line = self::buildBafiControlLine705($pdo, 1, $file_type, $bureau_number, $sector_code);
 
         // איחוי התוכן עם CRLF
         $content = rtrim((string)$data_line, "\r\n") . "\r\n" . rtrim((string)$control_line, "\r\n") . "\r\n";
-
-
-        /*
-        // 1) שם קובץ מה־SP; fallback אם לא חוזר
-        $filename = self::fetchScalar($pdo, "CALL sp_bafi_filename_for_employee(:eid)", [':eid' => $employee_id]);
-        //self::consumeNextResult($pdo);
-        if (!$filename) {
-            $filename = "bafi_{$employee_id}.txt";
-        }
-
-        // 2) DATA line
-        $data_line = self::fetchScalar($pdo, "CALL sp_bafi_file_for_employee(:eid,:rt,:mt,:sc,:sd)", [
-            ':eid' => $employee_id, ':rt' => $record_type, ':mt' => $mana_type, ':sc' => $status_code, ':sd' => $status_date,
-        ]);
-        //self::consumeNextResult($pdo);
-        if (!$data_line) {
-            http_response_code(500);
-            echo "No BAFI data returned for employee #{$employee_id}";
-            return;
-        }
-
-        // 3) CONTROL line
-        $control_line = self::fetchScalar($pdo, "CALL sp_bafi_control_record(:total)", [':total' => 1]);
-        //self::consumeNextResult($pdo);
-
-        $content = rtrim((string)$data_line, "\r\n") . "\r\n" . rtrim((string)$control_line, "\r\n") . "\r\n";
-*/        
+        
         $rows_count = 2;
 
         // 4) שיוכים (אחרון/פעיל) לנוחות בהיסטוריה
@@ -412,7 +380,11 @@ class ExportsController
         // עברית: גזירה וריפוד משמאל (יישור לימין)
         $s = (string)($val ?? '');
         $s = mb_substr($s, 0, $len, 'UTF-8');
-        return str_pad($s, $len, ' ', STR_PAD_LEFT);
+        if(empty($s)) {
+            return str_pad($s, $len, ' ', STR_PAD_RIGHT);
+        }
+        $he_s_len = $len + strlen($s)/2; // הערכה גסה של אורך תווים בעברית
+        return str_pad($s, $he_s_len, ' ', STR_PAD_RIGHT);
     }
     private static function numPad($val, int $len): string
     {
@@ -484,7 +456,7 @@ class ExportsController
         $line .= self::numPad($rt, 2);                             // 15-16
         $line .= self::numPad($mt, 2);                             // 17-18
 
-        $country = $e['country_symbol_moi'] ?? $e['country_of_citizenship'] ?? '';
+        $country = $e['country_of_citizenship'] ?? '';
         $line .= self::numPad($country, 3);                        // 19-21
         $line .= self::strL($e['passport_number'] ?? '', 15);      // 22-36
         $line .= self::strL($e['last_name'] ?? '', 20);            // 37-56 (EN)
@@ -504,17 +476,18 @@ class ExportsController
         $line .= self::numPad($r['id_type_code'] ?? '', 1);        // 170
         $line .= self::numPad($r['id_number'] ?? '', 9);           // 171-179
         $line .= self::strL($r['passport_number'] ?? '', 15);      // 180-194
-        $line .= self::strL($r['last_name'] ?? '', 20);            // 195-214
-        $line .= self::strL($r['first_name'] ?? '', 20);           // 215-234
+        $line .= self::strR($r['last_name'] ?? '', 20);            // 195-214
+        $line .= self::strR($r['first_name'] ?? '', 20);           // 215-234
         $line .= self::numPad($r['gender_code'] ?? '', 1);         // 235
         $line .= self::numPad($r['birth_year'] ?? '', 4);          // 236-239
 
         $line .= self::numPad($r['city_code'] ?? '', 4);           // 240-243
-        $line .= self::strL($r['city_name_he'] ?? '', 30);         // 244-273
-        $line .= self::strL($r['street_name_he'] ?? '', 20);       // 274-293
+        $line .= self::strR($r['city_name_he'] ?? '', 30);         // 244-273
+        $line .= self::strR($r['street_name_he'] ?? '', 20);       // 274-293
         $line .= self::strL($r['house_no'] ?? '', 6);              // 294-299
         $line .= self::numPad($r['zipcode'] ?? '', 5);             // 300-304
-        $line .= self::strL(($r['phone_number_il'] ?? '') ?: self::digitsOnly($r['phone'] ?? ''), 10); // 305-314
+//        $line .= self::strL($r['phone'] ?? '', 10);                // 305-314
+        $line .= self::strL($r['phone_prefix_il'] . $r['phone_number_il'] ?? '', 10);       // 305-314
 
         // E_MAIL
         $line .= self::strL($e['email'] ?? '', 40);                // 315-354
@@ -542,8 +515,8 @@ class ExportsController
         $line .= self::strL($e['beneficiary_first_name'] ?? '', 30);     // 675-704
 
         // חיתוך/ריפוד סופי ל-705
-        $line = substr($line, 0, 705);
-        if (strlen($line) < 705) { $line = str_pad($line, 705, ' '); }
+        //$line = substr($line, 0, 705);
+        //if (strlen($line) < 705) { $line = str_pad($line, 705, ' '); }
 
         return $line;
     }
@@ -561,7 +534,7 @@ class ExportsController
         $line .= self::numPad($sectorCode, 2);      // 13-14
         $line .= self::numPad('99', 2);             // 15-16
         $line .= self::numPad((string)$totalRows, 4);// 17-20
-        return str_pad(substr($line, 0, 705), 705, ' '); // 21-705 ריפוד
+        return $line;
     }
 
     public static function piba(PDO $pdo)

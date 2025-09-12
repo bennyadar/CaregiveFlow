@@ -46,11 +46,11 @@
   <!-- ================= טלפון ישראלי ================= -->
     <div class="col-md-1">
       <label class="form-label">קידומת</label>
-      <input type="text" name="phone_prefix_il" class="form-control" maxlength="4" value="<?= e($item['phone_prefix_il'] ?? '') ?>">
+      <input type="text" name="phone_prefix_il" class="form-control" maxlength="3" value="<?= e($item['phone_prefix_il'] ?? '') ?>">
     </div>
     <div class="col-md-3">
       <label class="form-label">מס' טלפון</label>
-      <input type="text" name="phone_number_il" class="form-control" maxlength="10" value="<?= e($item['phone_number_il'] ?? '') ?>">
+      <input type="text" name="phone_number_il" class="form-control" maxlength="7" value="<?= e($item['phone_number_il'] ?? '') ?>">
     </div>
 
 
