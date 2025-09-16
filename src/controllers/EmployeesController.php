@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../models/Employee.php';
 require_once __DIR__ . '/../models/CodeTables.php';
+require_once __DIR__ . '/../models/Placement.php';
 
 class EmployeesController {
     public static function index(PDO $pdo) {
@@ -250,7 +251,12 @@ class EmployeesController {
 
                     try {
                         if ($pp_primary) {
-                            $pdo->prepare("UPDATE employee_passports SET is_primary = 0 WHERE employee_id = ?")->execute([$id]);
+                            $stmt = $pdo->prepare("UPDATE employee_passports SET is_primary = 0 WHERE employee_id = ?")->execute([$id]);
+                            $stmt = $pdo->prepare("UPDATE employees SET passport_number = :passport_number WHERE employee_id = :employee_id");
+                            $stmt->execute([
+                                ':employee_id'      => $id,
+                                ':passport_number'  => $pp_num,
+                            ]);
                         }
                         $stmt = $pdo->prepare("
                             INSERT INTO employee_passports
@@ -292,7 +298,12 @@ class EmployeesController {
     }
     public static function delete(PDO $pdo) {
         require_login('admin');
-        $id = (int)($_POST['id'] ?? 0);
+        $id = (int)($_GET['id'] ?? 0);
+        // ensure no placements exist for this employee before deleting
+        if ((new Placement($pdo))->countActiveByEmployee($id) > 0) {
+            flash('לא ניתן למחוק עובד עם שיבוץ פעיל.', 'danger');
+            redirect('employers/index');
+        }        
         (new Employee($pdo))->delete($id);
         flash('העובד נמחק.');
         redirect('employees/index');
@@ -311,9 +322,12 @@ class EmployeesController {
         $employee_passports = $st->fetchAll(PDO::FETCH_ASSOC);
         // <<< passports
         if (!$item) { flash('עובד לא נמצא.', 'danger'); redirect('employees/index'); }
+        
         $codes     = new CodeTables($pdo);
         $countries = $codes->countries();
         $genders   = $codes->genders();
+        $maritals  = $codes->marital_statuses();
+
         // ==== קודי מת״ש למודל הייצוא ====
         // סוגי מנה
         $mana_type_codes = [];
@@ -339,7 +353,7 @@ class EmployeesController {
                 ORDER BY end_reason_code
             ");
             $end_reasons = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
-        } catch (Throwable $e) { $end_reasons = []; }
+        } catch (Throwable $e) { $end_reasons = []; }           
         
         require __DIR__ . '/../../views/employees/show.php';
     }

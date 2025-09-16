@@ -3,6 +3,9 @@
 // ===== Maps אופציונליים לשמות קוד→תווית (אם הועברו מהקונטרולר) =====
 $countriesMap = isset($countries) ? array_column($countries, 'name_he', 'country_code') : [];
 $gendersMap   = isset($genders)   ? array_column($genders,   'name_he', 'gender_code')   : [];
+$martialsMap   = isset($maritals)   ? array_column($maritals, 'name_he', 'marital_status_code') : [];
+
+// פונקציות עזר לתצוגת תוויות מתוך קוד
 $countryLabel = function($code) use ($countriesMap) {
     $code = (string)($code ?? '');
     $name = ($code !== '' && isset($countriesMap[$code])) ? $countriesMap[$code] : null;
@@ -13,6 +16,12 @@ $genderLabel = function($code) use ($gendersMap) {
     $name = ($code !== '' && isset($gendersMap[$code])) ? $gendersMap[$code] : null;
     return $name ? e($name) . ' (' . e($code) . ')' : e($code);
 };
+$maritalLabel = function($code) use ($martialsMap) {
+    $code = (string)($code ?? '');
+    $name = ($code !== '' && isset($martialsMap[$code])) ? $martialsMap[$code] : null;
+    return $name ? e($name) . ' (' . e($code) . ')' : e($code);
+};
+
 ?>
 
 <div class="container my-4">
@@ -48,7 +57,6 @@ $genderLabel = function($code) use ($gendersMap) {
     </div>
   </div>
 
-  <!-- ===== פרטים כלליים (BAFI 19–169, 315–354) ===== -->
   <div class="card mb-3 shadow-sm">
     <div class="card-header fw-semibold">פרטים כלליים</div>
     <div class="card-body p-0">
@@ -57,8 +65,8 @@ $genderLabel = function($code) use ($gendersMap) {
           <tr>
             <th class="w-25">דרכון</th>
             <td><?= e($item['passport_number'] ?? '') ?></td>
-            <th class="w-25">קוד ארץ (MoI)</th>
-            <td><?= $countryLabel($item['country_symbol_moi'] ?? $item['country_of_citizenship'] ?? '') ?></td>
+            <th class="w-25">קוד ארץ</th>
+            <td><?= $countryLabel($item['country_of_citizenship'] ?? '') ?></td>
           </tr>
           <tr>
             <th>שם משפחה (לטיני)</th>
@@ -80,9 +88,9 @@ $genderLabel = function($code) use ($gendersMap) {
           </tr>
           <tr>
             <th>תאריך לידה</th>
-            <td><?= e($item['birth_date'] ?? '') ?></td>
+            <td><?= e(date_to_string($item['birth_date']) ?? '') ?></td>
             <th>מצב משפחתי</th>
-            <td><?= e($item['marital_status_code'] ?? '') ?></td>
+            <td><?= $maritalLabel($item['marital_status_code'] ?? '') ?></td>
           </tr>
           <tr>
             <th>דוא"ל</th>
@@ -117,10 +125,10 @@ $genderLabel = function($code) use ($gendersMap) {
           </tr>
           <tr>
             <th>ביטוח רפואי – תאריך הפקה</th>
-            <td><?= e($item['health_ins_issue_date'] ?? '') ?></td>
+            <td><?= e(date_to_string($item['health_ins_issue_date']) ?? '') ?></td>
             <th>ביטוח רפואי – תאריך פקיעה</th>
             <td>
-              <?php $exp = $item['health_ins_expiry'] ?? null; $isExpired = ($exp && $exp < date('Y-m-d')); ?>
+              <?php $exp = date_to_string($item['health_ins_expiry']) ?? null; $isExpired = ($exp && $exp < date('Y-m-d')); ?>
               <span class="<?= $isExpired ? 'text-danger fw-semibold' : '' ?>"><?= e($exp ?? '') ?></span>
             </td>
           </tr>
@@ -128,7 +136,7 @@ $genderLabel = function($code) use ($gendersMap) {
             <th>מת"ש – מספר מנה</th>
             <td><?= e($item['metash_mana_number'] ?? '') ?></td>
             <th>מת"ש – תאריך רישום</th>
-            <td><?= e($item['metash_registration_date'] ?? '') ?></td>
+            <td><?= e(date_to_string($item['metash_registration_date']) ?? '') ?></td>
           </tr>
         </tbody>
       </table>

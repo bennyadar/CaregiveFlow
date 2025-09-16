@@ -89,6 +89,26 @@ class Placement {
         return $row ?: null;
     }
 
+    public function countActiveByEmployer(int $id): int {
+        $sc = $this->cols['start']; $en = $this->cols['end'];
+        $idc = $this->cols['employer_id'];
+        $sql = $this->pdo->prepare("SELECT COUNT(*) FROM placements WHERE $idc = ? 
+                                   AND $sc <= CURDATE()
+                                   AND ( $en IS NULL OR $en >= CURDATE() )");
+        $sql->execute([$id]);
+        return (int)$sql->fetchColumn();
+    }    
+
+    public function countActiveByEmployee(int $id): int {
+        $sc = $this->cols['start']; $en = $this->cols['end'];
+        $idc = $this->cols['employee_id'];
+        $sql = $this->pdo->prepare("SELECT COUNT(*) FROM placements WHERE $idc = ? 
+                                   AND $sc <= CURDATE()
+                                   AND ( $en IS NULL OR $en >= CURDATE() )");
+        $sql->execute([$id]);
+        return (int)$sql->fetchColumn();
+    }   
+
     public function create(array $d): int {
         $ec = $this->cols['employee_id']; $er = $this->cols['employer_id'];
         $sc = $this->cols['start']; $en = $this->cols['end']; $nt = $this->cols['notes'] ?? null;

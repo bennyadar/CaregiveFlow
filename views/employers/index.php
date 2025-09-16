@@ -26,13 +26,10 @@
         <td><?= e($r['phone']) ?></td>
         <td><?= e($r['email']) ?></td>
         <td class="text-end">
-          <a class="btn btn-sm btn-outline-secondary" href="index.php?r=employers/show&id=<?= (int)$r['id'] ?>">צפייה</a>
-          <a class="btn btn-sm btn-primary" href="index.php?r=employers/edit&id=<?= (int)$r['id'] ?>">עריכה</a>
+          <a class="btn btn-sm btn-outline-primary" href="index.php?r=employers/show&id=<?= (int)$r['id'] ?>">צפייה</a>
+          <a class="btn btn-sm btn-outline-primary" href="index.php?r=employers/edit&id=<?= (int)$r['id'] ?>">עריכה</a>
           <?php if ((current_user()['role'] ?? '') === 'admin'): ?>
-          <form class="d-inline" method="post" action="index.php?r=employers/delete" onsubmit="return confirm('למחוק את המעסיק?');">
-            <input type="hidden" name="id" value="<?= (int)$r['id'] ?>">
-            <button class="btn btn-sm btn-danger">מחיקה</button>
-          </form>
+          <a class="btn btn-sm btn-outline-danger" href="?r=employers/delete&id=<?= e($r['id']) ?>" onclick="return confirm('למחוק?');">מחיקה</a>
           <?php endif; ?>
         </td>
       </tr>

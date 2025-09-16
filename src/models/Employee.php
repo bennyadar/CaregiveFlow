@@ -5,7 +5,7 @@ class Employee {
 
     // שדות שמותר לכתוב (CRUD)
     private array $fillable = [
-        'passport_number','country_of_citizenship','country_symbol_moi',
+        'country_of_citizenship',
         'last_name','last_name_he','first_name_he','first_name','father_name_en',
         'gender_code','marital_status_code','birth_date',
         'phone','phone_prefix_il','phone_number_il','phone_alt','email',

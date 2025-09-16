@@ -74,3 +74,9 @@ function csrf(): void {
         throw new RuntimeException('Invalid CSRF token');
     }
 }
+
+function date_to_string(?string $date): string {
+    if (!$date) return '';
+    $d = new DateTime($date);
+    return $d->format('d/m/Y');
+}

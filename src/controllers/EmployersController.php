@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../models/Employer.php';
 require_once __DIR__ . '/../models/CodeTables.php';
+require_once __DIR__ . '/../models/Placement.php';
 
 class EmployersController {
     public static function index(PDO $pdo) {
@@ -115,7 +116,12 @@ class EmployersController {
     }
     public static function delete(PDO $pdo) {
         require_login('admin');
-        $id = (int)($_POST['id'] ?? 0);
+        $id = (int)($_GET['id'] ?? 0);
+        // ensure no placements exist for this employer before deleting
+        if ((new Placement($pdo))->countActiveByEmployer($id) > 0) {
+            flash('לא ניתן למחוק מעסיק עם שיבוץ פעיל.', 'danger');
+            redirect('employers/index');
+        }
         (new Employer($pdo))->delete($id);
         flash('המעסיק נמחק.');
         redirect('employers/index');
