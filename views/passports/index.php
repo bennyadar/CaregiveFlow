@@ -2,10 +2,10 @@
 <?php require __DIR__ . '/../layout/header.php'; ?>
 <div class="container" dir="rtl">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1 class="h4 mb-0">דרכונים</h1>
+        <h1 class="h4 mb-0">דרכונים לעובד</h1>
         <div class="d-flex gap-2">
-            <a class="btn btn-primary" href="?r=passports/create">+ דרכון חדש</a>
-            <a class="btn btn-outline-secondary" href="?r=employees/show&id=<?= e($_GET['employee_id']) ?>">חזרה לכרטיס עובד</a>
+            <a class="btn btn-primary" href="?r=passports/create&employee_id=<?= e($filters['employee_id']) ?>">+ דרכון חדש</a>
+            <a class="btn btn-outline-secondary" href="?r=employees/show&id=<?= e($filters['employee_id']) ?>">חזרה לכרטיס עובד</a>
         </div>
     </div>
 
@@ -98,8 +98,8 @@
                     <td><?= is_null($days)?'—':e($days) ?></td>
                     <td><?= !empty($row['is_primary']) ? '✔' : '' ?></td>
                     <td class="text-end">
-                        <a class="btn btn-sm btn-outline-secondary" href="?r=passports/view&id=<?= e($row['id']) ?>&employee_id=<?= e($_GET['employee_id']) ?>">צפייה</a>
-                        <a class="btn btn-sm btn-outline-primary" href="?r=passports/edit&id=<?= e($row['id']) ?>&employee_id=<?= e($_GET['employee_id']) ?>">עריכה</a>
+                        <a class="btn btn-sm btn-outline-secondary" href="?r=passports/view&id=<?= e($row['id']) ?>&employee_id=<?= e($filters['employee_id']) ?>">צפייה</a>
+                        <a class="btn btn-sm btn-outline-primary" href="?r=passports/edit&id=<?= e($row['id']) ?>&employee_id=<?= e($filters['employee_id']) ?>">עריכה</a>
                         <a class="btn btn-sm btn-outline-danger" href="?r=passports/delete&id=<?= e($row['id']) ?>" onclick="return confirm('למחוק?');">מחיקה</a>
                     </td>
                 </tr>

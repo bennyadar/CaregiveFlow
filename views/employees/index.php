@@ -11,7 +11,7 @@
 <div class="container" dir="rtl">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h3 class="m-0">עובדים</h3>
-        <a class="btn btn-primary" href="?r=employees/create">+ עובד חדש</a>
+        <a class="btn btn-success" href="?r=employees/create">+ עובד חדש</a>
     </div>
 
     <!-- סינון בסיסי -->
@@ -75,7 +75,7 @@
                         <a class="btn btn-sm btn-outline-primary" href="?r=employees/edit&id=<?= e($row['id']) ?>">עריכה</a>
                         <!-- ייצוא: מרוכז ל-dropdown אחד -->
                         <div class="btn-group btn-group-sm" role="group">
-                          <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                          <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                             ייצוא
                           </button>
                           <ul class="dropdown-menu dropdown-menu-end" dir="rtl">

@@ -1,9 +1,14 @@
 <?php /** @var array $items, $employers, $status_codes, $type_codes, $payment_codes; @var int $page,$pages,$total; */ ?>
 <?php require __DIR__ . '/../layout/header.php'; ?>
 <div class="container" dir="rtl">
+
+    <!-- כותרת + כפתורים -->
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="m-0">דמי תאגיד</h3>
-        <a class="btn btn-primary" href="?r=employer_fees/create">+ חיוב חדש</a>
+        <h1 class="h4 mb-0">דמי תאגיד</h1>
+        <div class="d-flex gap-2">
+            <a class="btn btn-primary" href="?r=employer_fees/create">+ חיוב חדש</a>
+            <a class="btn btn-outline-secondary" href="?r=employers/show&id=<?= e($_GET['employer_id']) ?>">חזרה לכרטיס מעסיק</a>
+        </div>
     </div>
 
     <!-- סינון -->

@@ -10,7 +10,7 @@ class Employer {
         'birth_date','birth_year',
         'city_code','street_code','street_name_he','house_no','apartment','zipcode',
         'foreign_country_code',
-        'notes','company_name','contact_person','contact_name','contact_phone'
+        'notes','company_name','contact_email','contact_name','contact_phone'
     ];
 
     public function all(string $q = '', int $limit = 20, int $offset = 0): array {

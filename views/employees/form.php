@@ -1,5 +1,12 @@
 <?php require __DIR__ . '/../layout/header.php'; ?>
-<h1 class="h4 mb-3"><?= isset($item['id']) ? 'עריכת עובד #' . (int)$item['id'] : 'עובד חדש' ?></h1>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1 class="h4 mb-0"><?= isset($item['id']) ? 'עריכת עובד #' . (int)$item['id'] : 'עובד חדש' ?></h1>
+  <!-- Buttons Top -->
+  <div class="d-flex gap-2">
+    <button class="btn btn-primary">שמירה</button>
+    <a class="btn btn-outline-secondary" href="index.php?r=employees/index">ביטול</a>
+  </div>
+</div>  
 <form method="post" class="row g-3">
   <h2 class="h6">פרטים כלליים ופרטי עובד</h2>   
   <div class="col-md-2">
@@ -374,7 +381,7 @@
 
   <div class="col-12 d-flex gap-2">
     <button class="btn btn-primary">שמירה</button>
-    <a class="btn btn-outline-secondary" href="index.php?r=employees/index">חזרה</a>
+    <a class="btn btn-outline-secondary" href="index.php?r=employees/index">ביטול</a>
   </div>
 </form>
 <?php require __DIR__ . '/../layout/footer.php'; ?>

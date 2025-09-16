@@ -1,6 +1,16 @@
 <?php require __DIR__ . '/../layout/header.php'; ?>
-<h1 class="h4 mb-3"><?= isset($item['id']) ? 'עריכת מעסיק #' . (int)$item['id'] : 'מעסיק חדש' ?></h1>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1 class="h4 mb-0"><?= isset($item['id']) ? 'עריכת מעסיק #' . (int)$item['id'] : 'מעסיק חדש' ?></h1>
+
+  <!-- Buttons Top -->
+  <div class="d-flex gap-2">
+    <button class="btn btn-primary">שמירה</button>
+    <a class="btn btn-outline-secondary" href="index.php?r=employers/index">ביטול</a>
+  </div>
+</div>
+
 <form method="post" class="row g-3">
+  <h2 class="h6">פרטי מעסיק</h2>
   <div class="col-md-3">
     <label class="form-label">סוג תעודה *</label>
     <select name="id_type_code" class="form-select" required>
@@ -94,6 +104,22 @@
     <input type="text" name="zipcode" class="form-control" value="<?= e($item['zipcode'] ?? '') ?>">
   </div>
 
+  <hr class="mt-4">
+  <h2 class="h6">פרטי איש קשר</h2>
+  <div class="col-md-3">
+    <label class="form-label">שם איש קשר</label>
+    <input type="text" name="contact_name" class="form-control" value="<?= e($item['contact_name'] ?? '') ?>">
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">טלפון איש קשר</label>
+    <input type="text" name="contact_phone" class="form-control" value="<?= e($item['contact_phone'] ?? '') ?>">
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">אימייל איש קשר</label>
+    <input type="text" name="contact_email" class="form-control" value="<?= e($item['contact_email'] ?? '') ?>">
+  </div>  
+
+
   <!-- ===== Passports quick-add (Employer) ===== -->
   <div class="card mt-4">
     <div class="card-header fw-semibold">דרכון (הוספה מהירה)</div>
@@ -137,7 +163,7 @@
 
   <div class="col-12 d-flex gap-2">
     <button class="btn btn-primary">שמירה</button>
-    <a class="btn btn-outline-secondary" href="index.php?r=employers/index">חזרה</a>
+    <a class="btn btn-outline-secondary" href="index.php?r=employers/index">ביטול</a>
   </div>
 </form>
 <?php require __DIR__ . '/../layout/footer.php'; ?>

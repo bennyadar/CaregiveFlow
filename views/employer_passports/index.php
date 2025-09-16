@@ -8,9 +8,14 @@
 <?php require __DIR__ . '/../layout/header.php'; ?>
 
 <div class="container" dir="rtl">
+
+    <!-- כותרת + כפתורים -->
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="m-0">דרכונים (מעסיק)</h3>
-        <a class="btn btn-primary" href="?r=employer_passports/create">+ דרכון חדש</a>
+        <h1 class="h4 mb-0">דרכונים (מעסיק)</h1>
+        <div class="d-flex gap-2">
+            <a class="btn btn-primary" href="?r=employer_passports/create&employer_id=<?= e($filters['employer_id']) ?>">+ דרכון חדש</a>
+            <a class="btn btn-outline-secondary" href="?r=employers/show&id=<?= e($filters['employer_id']) ?>">חזרה לכרטיס מעסיק</a>
+        </div>
     </div>
 
     <!-- סינון -->

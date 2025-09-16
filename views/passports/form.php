@@ -96,9 +96,10 @@
 
         <div class="d-flex gap-2 mt-4">
             <button class="btn btn-success">שמירה</button>
-            <a class="btn btn-outline-secondary" href="?r=passports&employee_id=<?= e($_GET['employee_id']) ?>">חזרה לרשימת דרכונים</a>
-            <!-- <a class="btn btn-outline-secondary" href="?r=employees">חזרה לרשימת עובדים</a> -->
-            <a class="btn btn-outline-secondary" href="?r=employees/show&id=<?= e($_GET['employee_id']) ?>">חזרה לכרטיס עובד</a>
+            <a class="btn btn-outline-secondary" href="?r=passports&employee_id=<?= e($data['employee_id']) ?>">חזרה לרשימת דרכונים</a>
+            <?php if( isset($data['employee_id']) && $data['employee_id'] !== '' ) : ?>
+            <a class="btn btn-outline-secondary" href="?r=employees/show&id=<?= e($data['employee_id']) ?>">חזרה לכרטיס עובד</a>
+            <?php endif; ?>
         </div>
     </form>
 </div>

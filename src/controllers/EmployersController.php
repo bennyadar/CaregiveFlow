@@ -139,7 +139,10 @@ class EmployersController {
         if (!$item) { flash('מעסיק לא נמצא.', 'danger'); redirect('employers/index'); }
         $codes     = new CodeTables($pdo);
         $countries = $codes->countries();
+        $cities    = $codes->cities();
+        $streets = $item['city_code'] ? $codes->streetsByCity((int)$item['city_code']) : [];
         $genders   = $codes->genders();
+        $id_types  = $codes->employer_id_types();
         require __DIR__ . '/../../views/employers/show.php';
     }
 }
