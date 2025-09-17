@@ -80,6 +80,7 @@
                     <th>ת. פקיעה</th>
                     <th>סטטוס</th>
                     <th>נותרו ימים</th>
+                    <th>ראשי</th>
                     <th></th>
                 </tr>
             </thead>
@@ -94,7 +95,7 @@
                     <td><?= e($row['id']) ?></td>
                     <td>
                         <?= e($row['last_name'].' '.$row['first_name']) ?><br>
-                        <small class="text-muted"><?= e($row['id_number'] ?? $row['passport_number'] ?? '') ?></small>
+                        <!--<small class="text-muted"><?//= e($row['id_number'] ?? $row['passport_number'] ?? '') ?></small>-->
                     </td>
                     <td><?= e($row['passport_number']) ?></td>
                     <td><?= e($row['country_name'] ?? ($row['country_code']!==null?($country_codes[(int)$row['country_code']]??''):'')) ?></td>
@@ -115,6 +116,7 @@
                         <?php else: ?><?= e($days) ?>
                         <?php endif; ?>
                     </td>
+                    <td><?= !empty($row['is_primary']) ? '✔' : '' ?></td>
                     <td class="text-end">
                         <a class="btn btn-sm btn-outline-secondary" href="?r=employer_passports/view&id=<?= e($row['id']) ?>">צפייה</a>
                         <a class="btn btn-sm btn-outline-primary" href="?r=employer_passports/edit&id=<?= e($row['id']) ?>">עריכה</a>

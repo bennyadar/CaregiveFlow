@@ -91,7 +91,7 @@ class EmployerPassport
                        notes = :notes
                  WHERE id = :id";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([
+        return $stmt->execute([
             ':id'                 => $id,
             ':employer_id'        => (int)($data['employer_id'] ?? 0),
             ':passport_number'    => trim((string)($data['passport_number'] ?? '')),
@@ -169,7 +169,7 @@ class EmployerPassport
         $order    = $order_by ?: 'p.is_primary DESC, p.expiry_date ASC, p.id DESC';
 
         // שימו לב: פה יש ORDER BY אחד בלבד. אם היה לכם שורה נוספת של ORDER BY — יש להסיר.
-        $sql = "SELECT p.*, e.first_name, e.last_name, e.id_number, e.passport_number,
+        $sql = "SELECT p.*, e.first_name, e.last_name, e.id_number, e.passport_number AS employer_passport_number,
                        sc.name_he AS status_name,
                        tc.name_he AS type_name,
                        c.name_he  AS country_name
@@ -265,19 +265,24 @@ class EmployerPassport
     private function normalize(array $data, ?array $fallback = null): array
     {
         $out = [
-            'employer_id'          => $data['employer_id']          ?? ($fallback['employer_id']          ?? null),
-            'passport_number'      => trim((string)($data['passport_number'] ?? ($fallback['passport_number'] ?? ''))),
-            'issuing_country_code' => strtoupper(trim((string)($data['issuing_country_code'] ?? ($fallback['issuing_country_code'] ?? '')))),
-            'issue_date'           => $this->emptyToNull($data['issue_date']  ?? ($fallback['issue_date']  ?? null)),
-            'expiry_date'          => $this->emptyToNull($data['expiry_date'] ?? ($fallback['expiry_date'] ?? null)),
-            'is_primary'           => !empty($data['is_primary']) ? 1 : (int)($fallback['is_primary'] ?? 0),
-            'notes'                => $this->emptyToNull($data['notes'] ?? ($fallback['notes'] ?? null)),
+            'employer_id'        => $data['employer_id']        ?? ($fallback['employer_id']        ?? null),
+            'passport_number'    => trim((string)($data['passport_number'] ?? ($fallback['passport_number'] ?? ''))),
+            'passport_type_code' => $data['passport_type_code'] ?? ($fallback['passport_type_code'] ?? ''),
+            'country_code'       => $data['country_code']       ?? ($fallback['country_code']       ?? ''),
+            'issue_date'         => $this->emptyToNull($data['issue_date']  ?? ($fallback['issue_date']  ?? null)),
+            'expiry_date'        => $this->emptyToNull($data['expiry_date'] ?? ($fallback['expiry_date'] ?? null)),
+            'is_primary'         => !empty($data['is_primary']) ? 1 : (int)($fallback['is_primary'] ?? 0),
+            'issue_place'        => $this->emptyToNull($data['issue_place'] ?? ($fallback['issue_place'] ?? null)),
+            'status_code'        => $data['status_code']        ?? ($fallback['status_code']        ?? ''),
+            'notes'              => $this->emptyToNull($data['notes']        ?? ($fallback['notes']        ?? null)),
         ];
 
-        // הגנות בסיסיות:
-        $out['employer_id'] = (int)$out['employer_id'];
-        // issuing_country_code נשאר מחרוזת CHAR(2)
-        // passport_number נשאר מחרוזת
+        // המרות/הקשחות
+        $out['employer_id']        = (int)$out['employer_id'];
+        $out['passport_type_code'] = ($out['passport_type_code'] === '' ? null : (int)$out['passport_type_code']);
+        $out['country_code']       = ($out['country_code']       === '' ? null : (int)$out['country_code']);
+        $out['status_code']        = ($out['status_code']        === '' ? null : (int)$out['status_code']);
+
         return $out;
     }
 

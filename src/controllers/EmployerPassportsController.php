@@ -52,16 +52,16 @@ class EmployerPassportsController
 
         if (is_post()) {
             $data = [
-                'employer_id'        => isset($_POST['employer_id']) ?? '',
-                'passport_number'    => isset($_POST['passport_number']) ?? '',
-                'passport_type_code' => isset($_POST['passport_type_code']) ?? '',
-                'country_code'       => isset($_POST['country_code']) ?? '',
-                'issue_date'         => isset($_POST['issue_date']) ?? '',
-                'expiry_date'        => isset($_POST['expiry_date']) ?? '',
+                'employer_id'        => $_POST['employer_id']        ?? '',
+                'passport_number'    => $_POST['passport_number']    ?? '',
+                'passport_type_code' => $_POST['passport_type_code'] ?? '',
+                'country_code'       => $_POST['country_code']       ?? '',
+                'issue_date'         => $_POST['issue_date']         ?? '',
+                'expiry_date'        => $_POST['expiry_date']        ?? '',
                 'is_primary'         => isset($_POST['is_primary']) ? '1' : '0',
-                'issue_place'        => isset($_POST['issue_place']) ?? '',
-                'status_code'        => isset($_POST['status_code']) ?? '',
-                'notes'              => isset($_POST['notes']) ?? '',
+                'issue_place'        => $_POST['issue_place']        ?? '',
+                'status_code'        => $_POST['status_code']        ?? '',
+                'notes'              => $_POST['notes']              ?? '',
             ];
 
             $errors = EmployerPassportService::validate($data);
@@ -96,18 +96,17 @@ class EmployerPassportsController
 
         if (is_post()) {
             $data = [
-                'employer_id'        => isset($_POST['employer_id']) ?? $item['employer_id'],
-                'passport_number'    => isset($_POST['passport_number']) ?? $item['passport_number'],
-                'passport_type_code' => isset($_POST['passport_type_code']) ?? $item['passport_type_code'],
-                'country_code'       => isset($_POST['country_code']) ?? $item['country_code'],
-                'issue_date'         => isset($_POST['issue_date']) ?? $item['issue_date'],
-                'expiry_date'        => isset($_POST['expiry_date']) ?? $item['expiry_date'],
+                'employer_id'        => $_POST['employer_id']        ?? $item['employer_id'],
+                'passport_number'    => $_POST['passport_number']    ?? $item['passport_number'],
+                'passport_type_code' => $_POST['passport_type_code'] ?? (string)$item['passport_type_code'],
+                'country_code'       => $_POST['country_code']       ?? (string)$item['country_code'],
+                'issue_date'         => $_POST['issue_date']         ?? $item['issue_date'],
+                'expiry_date'        => $_POST['expiry_date']        ?? $item['expiry_date'],
                 'is_primary'         => isset($_POST['is_primary']) ? '1' : '0',
-                'issue_place'        => isset($_POST['issue_place']) ?? $item['issue_place'],
-                'status_code'        => isset($_POST['status_code']) ?? $item['status_code'],
-                'notes'              => isset($_POST['notes']) ?? $item['notes'],
+                'issue_place'        => $_POST['issue_place']        ?? $item['issue_place'],
+                'status_code'        => $_POST['status_code']        ?? (string)$item['status_code'],
+                'notes'              => $_POST['notes']              ?? $item['notes'],
             ];
-
             $errors = EmployerPassportService::validate($data);
             if (!$errors) {
                 try {

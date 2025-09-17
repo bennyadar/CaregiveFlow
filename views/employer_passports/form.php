@@ -3,7 +3,6 @@
  * קלטים מה-Controller: $data, $errors, $employers, $status_codes, $type_codes, $country_codes
  */ ?>
 <?php require __DIR__ . '/../layout/header.php'; ?>
-
 <div class="container" dir="rtl">
     <?php $is_edit = isset($data['id']); ?>
 

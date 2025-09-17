@@ -80,3 +80,7 @@ function date_to_string(?string $date): string {
     $d = new DateTime($date);
     return $d->format('d/m/Y');
 }
+
+function pre_print($v, $exit = 0): void {
+    echo '<pre>' . print_r($v, true) . '</pre>';
+}   

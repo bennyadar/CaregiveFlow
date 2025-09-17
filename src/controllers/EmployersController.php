@@ -132,7 +132,8 @@ class EmployersController {
         $m = new Employer($pdo);
         $item = $m->find($id);
         // >>> passports: employer
-        $st = $pdo->prepare("SELECT * FROM employer_passports WHERE employer_id = ? ORDER BY is_primary DESC, (expiry_date IS NULL) DESC, expiry_date DESC, id DESC");
+        //$st = $pdo->prepare("SELECT * FROM employer_passports WHERE employer_id = ? ORDER BY is_primary DESC, (expiry_date IS NULL) DESC, expiry_date DESC, id DESC");
+        $st = $pdo->prepare("SELECT * FROM employer_passports WHERE employer_id = ? and is_primary = 1 ");
         $st->execute([$id]);
         $employer_passports = $st->fetchAll(PDO::FETCH_ASSOC);
         // <<< passports
