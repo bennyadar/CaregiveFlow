@@ -110,7 +110,7 @@
 
         <div class="col-12 d-flex gap-2">
             <button class="btn btn-primary">שמירה</button>
-            <a class="btn btn-light" href="?r=employer_passports">ביטול</a>
+            <a class="btn btn-light" href="?r=employer_passports/index&employer_id=<?= e($data['employer_id']) ?>">ביטול</a>
         </div>
     </form>
 </div>

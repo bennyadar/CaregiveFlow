@@ -118,8 +118,8 @@
                     </td>
                     <td><?= !empty($row['is_primary']) ? '✔' : '' ?></td>
                     <td class="text-end">
-                        <a class="btn btn-sm btn-outline-secondary" href="?r=employer_passports/view&id=<?= e($row['id']) ?>">צפייה</a>
-                        <a class="btn btn-sm btn-outline-primary" href="?r=employer_passports/edit&id=<?= e($row['id']) ?>">עריכה</a>
+                        <a class="btn btn-sm btn-outline-secondary" href="?r=employer_passports/view&id=<?= e($row['id']) ?>&employer_id=<?= e($filters['employer_id']) ?>">צפייה</a>
+                        <a class="btn btn-sm btn-outline-primary" href="?r=employer_passports/edit&id=<?= e($row['id']) ?>&employer_id=<?= e($filters['employer_id']) ?>">עריכה</a>
                         <a class="btn btn-sm btn-outline-danger" href="?r=employer_passports/delete&id=<?= e($row['id']) ?>" onclick="return confirm('למחוק?');">מחיקה</a>
                     </td>
                 </tr>

@@ -9,8 +9,9 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h3 class="m-0">פרטי דרכון (מעסיק)</h3>
         <div>
-            <a class="btn btn-outline-secondary" href="?r=employer_passports">חזרה לרשימה</a>
             <a class="btn btn-primary" href="?r=employer_passports/edit&id=<?= e($item['id']) ?>">עריכה</a>
+            <a class="btn btn-outline-secondary" href="?r=employer_passports/index&employer_id=<?= e($_GET['employer_id']) ?>">חזרה לרשימה</a>
+            <a class="btn btn-outline-secondary" href="?r=employers/show&id=<?= e($emp['id']) ?>">חזרה לכרטיס מעסיק</a>
         </div>
     </div>
 

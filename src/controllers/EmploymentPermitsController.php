@@ -125,6 +125,34 @@ class EmploymentPermitsController
     public static function view(PDO $pdo)
     {
         require_login();
+        $m  = new EmploymentPermit($pdo);
+        $id = (int)($_GET['id'] ?? 0);
+        $item = $m->find($id);
+        if (!$item) { http_response_code(404); echo 'Not found'; return; }
+
+        // פרטי מעסיק (לתצוגה בכרטיס הימני)
+        $emp = self::employer_brief($pdo, (int)$item['employer_id']);
+
+        // שם סטטוס ושם סוג היתר (לקוד->שם)
+        $status_name = self::status_codes($pdo)[$item['status_code']] ?? null;
+        $type_name   = $item['permit_type_code'] !== null
+            ? (self::type_codes($pdo)[$item['permit_type_code']] ?? null)
+            : null;
+
+        // חישובי מצב: סטטוס נגזר + ימים עד פקיעה
+        $derived_status_code = EmploymentPermitService::derivedStatusCode(
+            $item['status_code'] ?? null,
+            $item['expiry_date'] ?? null
+        );
+        $days_left = EmploymentPermitService::daysUntilExpiry($item['expiry_date'] ?? null);
+
+        require __DIR__ . '/../../views/employment_permits/view.php';
+    }
+
+/*
+    public static function view(PDO $pdo)
+    {
+        require_login();
         $m = new EmploymentPermit($pdo);
         $id = (int)($_GET['id'] ?? 0);
         $item = $m->find($id);
@@ -139,7 +167,7 @@ class EmploymentPermitsController
 
         require __DIR__.'/../../views/employment_permits/view.php';
     }
-
+*/
     public static function delete(PDO $pdo)
     {
         require_login();

@@ -6,8 +6,8 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 class="h4 mb-0">היתרי העסקה</h1>
         <div class="d-flex gap-2">
-            <a class="btn btn-primary" href="?r=employment_permits/create">+ היתר חדש</a>
-            <a class="btn btn-outline-secondary" href="?r=employers/show&id=<?= e($_GET['employer_id']) ?>">חזרה לכרטיס מעסיק</a>
+            <a class="btn btn-primary" href="?r=employment_permits/create&employer_id=<?= e($filters['employer_id']) ?>">+ היתר חדש</a>
+            <a class="btn btn-outline-secondary" href="?r=employers/show&id=<?= e($filters['employer_id']) ?>">חזרה לכרטיס מעסיק</a>
         </div>
     </div>
 
@@ -98,8 +98,8 @@
                     </td>
                     <td><?= is_null($days)?'—':e($days) ?></td>
                     <td class="text-end">
-                        <a class="btn btn-sm btn-outline-secondary" href="?r=employment_permits/view&id=<?= e($row['id']) ?>">צפייה</a>
-                        <a class="btn btn-sm btn-outline-primary" href="?r=employment_permits/edit&id=<?= e($row['id']) ?>">עריכה</a>
+                        <a class="btn btn-sm btn-outline-secondary" href="?r=employment_permits/view&id=<?= e($row['id']) ?>&employer_id=<?= e($filters['employer_id']) ?>">צפייה</a>
+                        <a class="btn btn-sm btn-outline-primary" href="?r=employment_permits/edit&id=<?= e($row['id']) ?>&employer_id=<?= e($filters['employer_id']) ?>">עריכה</a>
                         <a class="btn btn-sm btn-outline-danger" href="?r=employment_permits/delete&id=<?= e($row['id']) ?>" onclick="return confirm('למחוק?');">מחיקה</a>
                     </td>
                 </tr>
