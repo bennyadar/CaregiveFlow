@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 08, 2025 at 12:13 AM
+-- Generation Time: Sep 18, 2025 at 08:41 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -2096,11 +2096,11 @@ CREATE TABLE `employees` (
   `passport_number` varchar(20) NOT NULL,
   `country_of_citizenship` int(10) UNSIGNED DEFAULT NULL,
   `country_symbol_moi` int(10) UNSIGNED DEFAULT NULL COMMENT 'MoI country numeric code (BAFI)',
-  `last_name` varchar(60) NOT NULL,
-  `last_name_he` varchar(60) DEFAULT NULL,
-  `first_name_he` varchar(60) DEFAULT NULL,
-  `first_name` varchar(60) NOT NULL,
-  `father_name_en` varchar(60) DEFAULT NULL,
+  `last_name` varchar(20) NOT NULL,
+  `last_name_he` varchar(20) DEFAULT NULL,
+  `first_name_he` varchar(20) DEFAULT NULL,
+  `first_name` varchar(20) NOT NULL,
+  `father_name_en` varchar(20) DEFAULT NULL,
   `mother_name_en` varchar(20) DEFAULT NULL COMMENT 'Mother name (EN, 20)',
   `gender_code` tinyint(3) UNSIGNED DEFAULT NULL,
   `marital_status_code` tinyint(3) UNSIGNED DEFAULT NULL,
@@ -2173,7 +2173,9 @@ CREATE TABLE `employees` (
 --
 
 INSERT INTO `employees` (`id`, `passport_number`, `country_of_citizenship`, `country_symbol_moi`, `last_name`, `last_name_he`, `first_name_he`, `first_name`, `father_name_en`, `mother_name_en`, `gender_code`, `marital_status_code`, `birth_date`, `phone`, `phone_prefix_il`, `phone_number_il`, `phone_alt`, `email`, `city_code`, `street_code`, `house_no`, `apartment`, `zipcode`, `abroad_city`, `abroad_street`, `abroad_house_no`, `abroad_postal_code`, `entry_date`, `visa_type`, `visa_expiry`, `work_permit_number`, `work_permit_issue`, `work_permit_expiry`, `is_active`, `employment_status_code`, `status_change_date`, `notes`, `record_type_code`, `mana_type_code`, `remarks_internal`, `created_at`, `updated_at`, `passport_issue_date`, `passport_expiry_date`, `country_code`, `phone_mobile`, `phone_home`, `id_type_code`, `id_number`, `visa_type_code`, `arrival_date`, `bank_name`, `bank_branch`, `bank_account`, `bank_foreign_country_code`, `bank_city_foreign`, `bank_street_foreign`, `bank_house_no_foreign`, `bank_code_foreign`, `bank_name_foreign`, `bank_branch_code_foreign`, `bank_branch_name_foreign`, `bank_swift`, `bank_iban`, `beneficiary_last_name`, `beneficiary_first_name`, `permit_number_bafi`, `spouse_name_en`, `spouse_in_israel`, `representative_abroad_name`, `health_ins_issue_date`, `health_ins_expiry`, `metash_mana_number`, `metash_registration_date`) VALUES
-(1, 'P5475160A', 131, 131, 'MANICAD', 'מניקד', 'טרזה', 'TERESA', 'EDMUNDO ANTONIO', 'TOMASA VILLON', 2, 2, '1969-06-17', '0503124156', '050', '3124156', NULL, NULL, 5000, 2345, '25', NULL, NULL, NULL, NULL, NULL, NULL, '2014-10-25', NULL, NULL, '979476117', NULL, '2021-02-28', 1, NULL, NULL, NULL, NULL, NULL, NULL, '2025-08-25 19:22:21', '2025-09-06 22:15:15', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'NELSON MANICAD', 0, 'NYD', '2018-10-29', '2019-10-28', NULL, NULL);
+(1, 'P5475160A', 131, 131, 'MANICAD', 'מניקד', 'טרזה', 'TERESA', 'EDMUNDO ANTONIO', 'TOMASA VILLON', 2, 2, '1969-06-17', '0503124156', '050', '3124156', NULL, NULL, 5000, 2345, '25', NULL, NULL, NULL, NULL, NULL, NULL, '2014-10-25', NULL, NULL, '979476117', NULL, '2021-02-28', 1, NULL, NULL, NULL, NULL, NULL, NULL, '2025-08-25 19:22:21', '2025-09-06 22:15:15', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'NELSON MANICAD', 0, 'NYD', '2018-10-29', '2019-10-28', NULL, NULL),
+(2, 'EC5352219', 131, NULL, 'FUERTEZ', 'פיורטז', 'מארי', 'MARY', 'GENARO CATAVONA', 'EVELYN ESTEBAN', 2, 2, '1986-05-18', NULL, '050', '3126674', NULL, NULL, 5000, 2307, '26', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-08 20:41:45', '2025-09-12 21:00:25', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'NYD', NULL, NULL, NULL, NULL),
+(8, 'P2682971A', 131, NULL, 'EVANGELISTA', 'אונג\'ליסטא', 'טרז שילה', 'THERESE SHIELA', 'CRISOSTOMO PADERNAL', 'ANGELINA GUMBAN', 2, 2, '1989-08-06', NULL, '050', '3192956', NULL, NULL, 5000, 2247, '16', NULL, NULL, NULL, NULL, NULL, NULL, '2018-03-28', NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-08 23:13:29', '2025-09-15 06:40:58', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'CRISTOPHER EVANGELIS', 0, 'NYD', NULL, NULL, '809962', '2018-01-24');
 
 -- --------------------------------------------------------
 
@@ -2202,8 +2204,8 @@ CREATE TABLE `employee_documents` (
 CREATE TABLE `employee_insurances` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `employee_id` bigint(20) UNSIGNED NOT NULL,
-  `policy_number` varchar(60) NOT NULL,
-  `insurer_name` varchar(120) NOT NULL,
+  `policy_number` varchar(60) DEFAULT NULL,
+  `insurer_name` varchar(120) DEFAULT NULL,
   `insurance_type_code` tinyint(3) UNSIGNED DEFAULT NULL,
   `request_date` date DEFAULT NULL,
   `issue_date` date DEFAULT NULL,
@@ -2221,7 +2223,8 @@ CREATE TABLE `employee_insurances` (
 --
 
 INSERT INTO `employee_insurances` (`id`, `employee_id`, `policy_number`, `insurer_name`, `insurance_type_code`, `request_date`, `issue_date`, `expiry_date`, `is_primary`, `primary_employee_id`, `status_code`, `notes`, `created_at`, `updated_at`) VALUES
-(1, 1, '1234567', 'הראל', 1, '2025-09-01', '2025-09-02', '2026-09-01', 0, NULL, 2, NULL, '2025-09-03 22:51:32', '2025-09-03 22:51:32');
+(1, 1, '1234567', 'הראל', 1, '2025-09-01', '2025-09-02', '2026-09-01', 0, NULL, 2, NULL, '2025-09-03 22:51:32', '2025-09-03 22:51:32'),
+(2, 8, NULL, NULL, NULL, NULL, '2018-09-19', '2019-09-18', 0, NULL, NULL, NULL, '2025-09-08 23:13:30', '2025-09-08 23:13:30');
 
 -- --------------------------------------------------------
 
@@ -2251,7 +2254,10 @@ CREATE TABLE `employee_passports` (
 --
 
 INSERT INTO `employee_passports` (`id`, `employee_id`, `passport_number`, `passport_type_code`, `country_code`, `issue_date`, `expiry_date`, `is_primary`, `primary_employee_id`, `issue_place`, `status_code`, `notes`, `created_at`, `updated_at`) VALUES
-(1, 1, 'P5475160A', 1, 131, '2025-09-01', '2026-09-01', 1, NULL, 'פיליפינים', 2, NULL, '2025-09-05 22:31:16', '2025-09-06 01:07:39');
+(1, 1, 'P5475160A', 1, 131, '2025-09-01', '2026-09-01', 1, NULL, 'פיליפינים', 2, NULL, '2025-09-05 22:31:16', '2025-09-06 01:07:39'),
+(4, 1, 'EC8320737', 1, 131, '2024-01-01', '2024-12-31', 0, NULL, NULL, NULL, 'added via employee edit form', '2025-09-08 00:05:16', '2025-09-08 00:05:16'),
+(6, 2, 'EC5352219', 1, 131, '2015-09-16', '2020-09-15', 1, NULL, NULL, NULL, 'created via employee form', '2025-09-08 20:41:45', '2025-09-08 20:41:45'),
+(15, 8, 'P2682971A', 1, 131, '2017-04-12', '2022-04-11', 1, NULL, 'פיליפינים', NULL, 'created via employee form', '2025-09-08 23:13:30', '2025-09-16 23:16:39');
 
 -- --------------------------------------------------------
 
@@ -2267,7 +2273,7 @@ CREATE TABLE `employers` (
   `last_name` varchar(60) NOT NULL,
   `first_name` varchar(60) NOT NULL,
   `gender_code` tinyint(3) UNSIGNED DEFAULT NULL COMMENT 'Employer gender (1=male,2=female per BAFI)',
-  `phone` varchar(30) DEFAULT NULL,
+  `phone` varchar(10) DEFAULT NULL,
   `phone_prefix_il` varchar(4) DEFAULT NULL,
   `phone_number_il` varchar(10) DEFAULT NULL,
   `phone_alt` varchar(30) DEFAULT NULL,
@@ -2286,7 +2292,7 @@ CREATE TABLE `employers` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `company_name` varchar(150) DEFAULT NULL,
-  `contact_person` varchar(120) DEFAULT NULL,
+  `contact_email` varchar(120) DEFAULT NULL,
   `contact_name` varchar(120) DEFAULT NULL,
   `contact_phone` varchar(30) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -2295,8 +2301,10 @@ CREATE TABLE `employers` (
 -- Dumping data for table `employers`
 --
 
-INSERT INTO `employers` (`id`, `id_type_code`, `id_number`, `passport_number`, `last_name`, `first_name`, `gender_code`, `phone`, `phone_prefix_il`, `phone_number_il`, `phone_alt`, `email`, `birth_date`, `birth_year`, `city_code`, `city_name_he`, `street_code`, `street_name_he`, `foreign_country_code`, `house_no`, `apartment`, `zipcode`, `notes`, `created_at`, `updated_at`, `company_name`, `contact_person`, `contact_name`, `contact_phone`) VALUES
-(1, 1, '330842345', NULL, 'דונסקי', 'שקד', 1, '0525826767', NULL, NULL, NULL, NULL, NULL, 2007, 8600, NULL, 1401, NULL, 900, '115', NULL, '52344', NULL, '2025-08-25 22:10:09', '2025-09-06 17:50:22', NULL, NULL, NULL, NULL);
+INSERT INTO `employers` (`id`, `id_type_code`, `id_number`, `passport_number`, `last_name`, `first_name`, `gender_code`, `phone`, `phone_prefix_il`, `phone_number_il`, `phone_alt`, `email`, `birth_date`, `birth_year`, `city_code`, `city_name_he`, `street_code`, `street_name_he`, `foreign_country_code`, `house_no`, `apartment`, `zipcode`, `notes`, `created_at`, `updated_at`, `company_name`, `contact_email`, `contact_name`, `contact_phone`) VALUES
+(1, 1, '330842345', 'EB9328472', 'דונסקי', 'שקד', 1, '0525826767', '052', '5826767', NULL, NULL, NULL, 2007, 8600, NULL, 1401, NULL, 900, '115', NULL, '52344', NULL, '2025-08-25 22:10:09', '2025-09-17 21:53:46', NULL, NULL, NULL, NULL),
+(2, 1, '076840958', NULL, 'במנולקר', 'רני', 2, '0542505500', '054', '2505500', NULL, NULL, NULL, 1946, 7200, NULL, 395, NULL, NULL, '16', NULL, NULL, NULL, '2025-09-08 23:19:34', '2025-09-08 23:19:34', NULL, NULL, NULL, NULL),
+(3, 1, '321654987', NULL, 'כהן', 'משה', 1, '0525869982', '052', '5869982', NULL, NULL, NULL, 1975, 5000, NULL, 1795, NULL, NULL, '12', NULL, NULL, NULL, '2025-09-09 19:26:21', '2025-09-16 10:49:09', NULL, 'bennyad@gmail.com', 'בני אדר', '0525698823');
 
 -- --------------------------------------------------------
 
@@ -2326,7 +2334,8 @@ CREATE TABLE `employer_corporate_fees` (
 --
 
 INSERT INTO `employer_corporate_fees` (`id`, `employer_id`, `period_ym`, `fee_type_code`, `amount`, `currency_code`, `due_date`, `payment_date`, `status_code`, `payment_method_code`, `reference_number`, `notes`, `created_at`, `updated_at`) VALUES
-(1, 1, '2025-09', 1, 59.00, 'ILS', '2025-09-01', '2025-09-01', 2, 3, NULL, NULL, '2025-09-03 23:55:06', '2025-09-03 23:55:06');
+(1, 1, '2025-09', 1, 59.00, 'ILS', '2025-09-01', '2025-09-01', 2, 3, NULL, NULL, '2025-09-03 23:55:06', '2025-09-03 23:55:06'),
+(2, 3, '2025-10', 1, 70.00, 'ILS', '2025-09-01', '2025-09-03', 2, 1, '12364', NULL, '2025-09-09 19:43:10', '2025-09-09 19:43:10');
 
 -- --------------------------------------------------------
 
@@ -2394,7 +2403,8 @@ CREATE TABLE `employer_passports` (
 --
 
 INSERT INTO `employer_passports` (`id`, `employer_id`, `passport_number`, `issuing_country_code`, `passport_type_code`, `country_code`, `issue_date`, `expiry_date`, `is_primary`, `issue_place`, `status_code`, `notes`, `created_at`, `updated_at`) VALUES
-(1, 1, '123456', '90', NULL, NULL, '2025-09-03', '2025-09-30', 1, NULL, NULL, 'added via employer edit form', '2025-09-06 17:50:22', '2025-09-06 17:50:22');
+(2, 1, 'EB9328472', '', 1, 900, '2025-09-03', '2025-09-30', 0, 'תל אביב', 2, NULL, '2025-09-17 21:36:41', '2025-09-17 21:56:26'),
+(3, 1, 'P5475160A', '', 1, 900, '2025-10-01', '2035-09-30', 1, 'תל אביב', 2, NULL, '2025-09-17 21:56:26', '2025-09-17 21:56:26');
 
 -- --------------------------------------------------------
 
@@ -2536,12 +2546,7 @@ CREATE TABLE `export_files` (
 --
 
 INSERT INTO `export_files` (`id`, `export_job_id`, `employee_id`, `employer_id`, `placement_id`, `filename`, `file_path`, `rows_count`, `sha256`, `created_at`) VALUES
-(1, 11, 1, 1, 1, 'oz_siud_manot_0211095601_1.txt', 'C:\\xampp\\htdocs\\CaregiveFlow\\src\\controllers/../../exports/2025/08/job_11/oz_siud_manot_0211095601_1.txt', 2, 'b5a9b930c234267afb38bdd49f479de6a05462fea95f064f308ff472f7daa379', '2025-08-29 23:57:46'),
-(2, 12, 1, 1, 1, 'oz_siud_manot_0211095601_1.txt', 'C:\\xampp\\htdocs\\CaregiveFlow\\src\\controllers/../../exports/2025/08/job_12/oz_siud_manot_0211095601_1.txt', 2, 'ba9479810a8d94e297f5f9d4dc6f91a03ab5a7efbbda4e6ebef8b2726efe6647', '2025-08-30 00:10:21'),
-(3, 13, 1, 1, 1, 'oz_siud_manot_0211095601_1.txt', 'C:\\xampp\\htdocs\\CaregiveFlow\\src\\controllers/../../exports/2025/08/job_13/oz_siud_manot_0211095601_1.txt', 2, 'ba9479810a8d94e297f5f9d4dc6f91a03ab5a7efbbda4e6ebef8b2726efe6647', '2025-08-30 00:10:49'),
-(4, 14, 1, 1, 1, 'oz_siud_manot_0211095601_1.txt', 'C:\\xampp\\htdocs\\CaregiveFlow\\src\\controllers/../../exports/2025/08/job_14/oz_siud_manot_0211095601_1.txt', 2, 'b5a9b930c234267afb38bdd49f479de6a05462fea95f064f308ff472f7daa379', '2025-08-30 00:44:12'),
-(5, 15, 1, 1, 1, 'oz_siud_manot_0211095601_1.txt', 'C:\\xampp\\htdocs\\CaregiveFlow\\src\\controllers/../../exports/2025/09/job_15/oz_siud_manot_0211095601_1.txt', 2, 'facda2868f7cfe7c6dbf43bc08889291da845788dd8e637736f57ceffe3462fc', '2025-09-01 22:02:24'),
-(6, 16, 1, 1, 2, 'oz_siud_manot_0211095601_1.txt', 'C:\\xampp\\htdocs\\CaregiveFlow\\src\\controllers/../../exports/2025/09/job_16/oz_siud_manot_0211095601_1.txt', 2, '5029a2fcf7b29757ec2a5b3f39ce28914e075a09b8726b54cbb1e09896a71a00', '2025-09-06 21:08:10');
+(39, 49, 2, 3, 6, 'oz_siud_manot_0211095601_2.txt', 'C:\\xampp\\htdocs\\CaregiveFlow\\src\\controllers/../../exports/2025/09/job_49/oz_siud_manot_0211095601_2.txt', 2, '8ca8a12c3a7095e253625ed057a8b9390c6fcbce1c3f395b73043da92d888af4', '2025-09-12 21:49:04');
 
 -- --------------------------------------------------------
 
@@ -2563,12 +2568,7 @@ CREATE TABLE `export_jobs` (
 --
 
 INSERT INTO `export_jobs` (`id`, `export_type`, `requested_by`, `created_at`, `status`, `notes`) VALUES
-(11, 'BAFI', 1, '2025-08-29 23:57:46', 'done', NULL),
-(12, 'BAFI', 1, '2025-08-30 00:10:21', 'done', NULL),
-(13, 'BAFI', 1, '2025-08-30 00:10:49', 'done', NULL),
-(14, 'BAFI', 1, '2025-08-30 00:44:12', 'done', NULL),
-(15, 'BAFI', 1, '2025-09-01 22:02:24', 'done', NULL),
-(16, 'BAFI', 1, '2025-09-06 21:08:10', 'done', NULL);
+(49, 'BAFI', 1, '2025-09-12 21:49:04', 'done', NULL);
 
 -- --------------------------------------------------------
 
@@ -2779,7 +2779,11 @@ CREATE TABLE `placements` (
 --
 
 INSERT INTO `placements` (`id`, `employee_id`, `employer_id`, `start_date`, `end_date`, `end_reason_code`, `notes`, `created_at`, `updated_at`) VALUES
-(2, 1, 1, '2025-08-01', '2025-09-30', NULL, '', '2025-09-02 20:56:26', '2025-09-02 20:56:26');
+(2, 1, 1, '2025-08-01', '2025-09-30', NULL, '', '2025-09-02 20:56:26', '2025-09-13 07:35:47'),
+(3, 2, 1, '2025-09-01', '2025-08-09', NULL, '', '2025-09-08 22:53:56', '2025-09-09 19:21:36'),
+(4, 8, 2, '2018-01-24', NULL, NULL, '', '2025-09-08 23:38:22', '2025-09-08 23:38:22'),
+(5, 2, 2, '2025-01-09', '2025-08-09', NULL, '', '2025-09-09 19:22:09', '2025-09-09 19:28:15'),
+(6, 2, 3, '2025-09-09', NULL, NULL, '', '2025-09-09 19:31:14', '2025-09-09 19:31:14');
 
 -- --------------------------------------------------------
 
@@ -51250,7 +51254,7 @@ INSERT INTO `users` (`id`, `username`, `password_hash`, `role`, `display_name`, 
 CREATE TABLE `visas` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `employee_id` bigint(20) UNSIGNED NOT NULL,
-  `visa_number` varchar(50) NOT NULL,
+  `visa_number` varchar(50) DEFAULT NULL,
   `request_date` date DEFAULT NULL,
   `issue_date` date DEFAULT NULL,
   `expiry_date` date DEFAULT NULL,
@@ -51265,7 +51269,9 @@ CREATE TABLE `visas` (
 --
 
 INSERT INTO `visas` (`id`, `employee_id`, `visa_number`, `request_date`, `issue_date`, `expiry_date`, `status`, `notes`, `created_at`, `updated_at`) VALUES
-(1, 1, '123', '2018-01-27', '2018-02-27', '2025-09-23', 'expired', '', '2025-09-01 23:20:44', '2025-09-06 23:06:31');
+(1, 1, '123', '2018-01-27', '2018-02-27', '2025-09-23', 'expired', '', '2025-09-01 23:20:44', '2025-09-06 23:06:31'),
+(2, 2, NULL, NULL, '2017-05-15', '2018-06-04', 'requested', 'created via employee quick-add', '2025-09-08 20:41:45', '2025-09-08 20:41:45'),
+(5, 8, NULL, NULL, '2018-03-18', '2019-02-05', 'requested', 'created via employee quick-add', '2025-09-08 23:13:30', '2025-09-08 23:13:30');
 
 -- --------------------------------------------------------
 
@@ -51280,8 +51286,8 @@ CREATE TABLE `v_active_placements` (
 ,`is_active_now` int(1)
 ,`employee_id` bigint(20) unsigned
 ,`passport_number` varchar(20)
-,`emp_first_name` varchar(60)
-,`emp_last_name` varchar(60)
+,`emp_first_name` varchar(20)
+,`emp_last_name` varchar(20)
 ,`employer_id` bigint(20) unsigned
 ,`emr_first_name` varchar(60)
 ,`emr_last_name` varchar(60)
@@ -51298,8 +51304,8 @@ CREATE TABLE `v_bafi_employee_raw` (
 ,`emp_id_type_code` varchar(10)
 ,`emp_id_number` varchar(32)
 ,`emp_passport_number` varchar(20)
-,`emp_first_name` varchar(60)
-,`emp_last_name` varchar(60)
+,`emp_first_name` varchar(20)
+,`emp_last_name` varchar(20)
 ,`emp_gender_code` tinyint(3) unsigned
 ,`emp_marital_status_code` tinyint(3) unsigned
 ,`emp_birth_date` date
@@ -51321,7 +51327,7 @@ CREATE TABLE `v_bafi_employee_raw` (
 ,`er_id_number` varchar(20)
 ,`er_first_name` varchar(60)
 ,`er_last_name` varchar(60)
-,`er_phone` varchar(30)
+,`er_phone` varchar(10)
 ,`er_phone_alt` varchar(30)
 ,`er_email` varchar(120)
 ,`er_birth_date` date
@@ -51341,8 +51347,8 @@ CREATE TABLE `v_bafi_employee_raw` (
 CREATE TABLE `v_bafi_export_rows` (
 `employee_id` bigint(20) unsigned
 ,`passport` varchar(20)
-,`employee_first_name` varchar(60)
-,`employee_last_name` varchar(60)
+,`employee_first_name` varchar(20)
+,`employee_last_name` varchar(20)
 ,`employer_id` bigint(20) unsigned
 ,`employer_first_name` varchar(60)
 ,`employer_last_name` varchar(60)
@@ -51919,7 +51925,7 @@ ALTER TABLE `cf_migration_warnings`
 -- AUTO_INCREMENT for table `employees`
 --
 ALTER TABLE `employees`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `employee_documents`
@@ -51931,25 +51937,25 @@ ALTER TABLE `employee_documents`
 -- AUTO_INCREMENT for table `employee_insurances`
 --
 ALTER TABLE `employee_insurances`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `employee_passports`
 --
 ALTER TABLE `employee_passports`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `employers`
 --
 ALTER TABLE `employers`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `employer_corporate_fees`
 --
 ALTER TABLE `employer_corporate_fees`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `employer_documents`
@@ -51961,7 +51967,7 @@ ALTER TABLE `employer_documents`
 -- AUTO_INCREMENT for table `employer_passports`
 --
 ALTER TABLE `employer_passports`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `employment_permits`
@@ -51973,13 +51979,13 @@ ALTER TABLE `employment_permits`
 -- AUTO_INCREMENT for table `export_files`
 --
 ALTER TABLE `export_files`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- AUTO_INCREMENT for table `export_jobs`
 --
 ALTER TABLE `export_jobs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT for table `home_visits`
@@ -51991,7 +51997,7 @@ ALTER TABLE `home_visits`
 -- AUTO_INCREMENT for table `placements`
 --
 ALTER TABLE `placements`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `report_periods`
@@ -52009,7 +52015,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `visas`
 --
 ALTER TABLE `visas`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Constraints for dumped tables
