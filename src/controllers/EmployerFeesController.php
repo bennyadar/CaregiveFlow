@@ -9,18 +9,45 @@ class EmployerFeesController
         require_login();
         $m = new EmployerFee($pdo);
 
+        // גזירת חודש ממוקד (period_ym) והתחום היומי שלו
+        $periodYm   = $_GET['period_ym'] ?? '';
+        $periodStart = null; $periodEnd = null;
+        if (preg_match('/^\d{4}-\d{2}$/', (string)$periodYm)) {
+            $periodStart = $periodYm.'-01';
+            $dt = DateTime::createFromFormat('Y-m-d', $periodStart);
+            if ($dt) { $periodEnd = $dt->format('Y-m-t'); }
+        }        
+
         $filters = [
-            'employer_id' => $_GET['employer_id'] ?? null,
-            'status'      => $_GET['status'] ?? null,
-            'q'           => $_GET['q'] ?? null,
-            'period_from' => $_GET['period_from'] ?? null,
-            'period_to'   => $_GET['period_to'] ?? null,
-            'paid_until'  => $_GET['paid_until'] ?? null,
+            'employer_id'   => $_GET['employer_id'] ?? null,
+            'status'        => $_GET['status'] ?? null,
+            'q'             => $_GET['q'] ?? null,
+            'period_from'   => $_GET['period_from'] ?? null,
+            'period_to'     => $_GET['period_to'] ?? null,
+            'paid_until'    => $_GET['paid_until'] ?? null,
+            'unpaid'        => (($_GET['unpaid'] ?? '') === '1') ? '1' : null,
+            'period_ym'     => $periodYm ?: null,
+            'period_start'  => $periodStart,
+            'period_end'    => $periodEnd,
+            'fee_type_code' => $_GET['fee_type_code'] ?? null,
         ];
 
         $page  = max(1, (int)($_GET['page'] ?? 1));
         $limit = 25; $offset = ($page - 1) * $limit;
 
+        // מצב מיוחד: מעסיקים שלא שילמו בחודש המבוקש
+        $unpaidEmployersMode = ($filters['unpaid'] && $filters['period_ym']);
+
+        if ($unpaidEmployersMode) {
+            $items = $m->unpaidEmployersForPeriod($filters, $limit, $offset);
+            $total = $m->countUnpaidEmployersForPeriod($filters);
+            $pages = (int)ceil($total / $limit);
+
+            require __DIR__.'/../../views/employer_fees/unpaid_employers.php';
+            return;
+        }        
+
+        // מצב רגיל: רשימת חיובים
         $items = $m->all($filters, $limit, $offset);
         $total = $m->count($filters);
         $pages = (int)ceil($total / $limit);
@@ -46,6 +73,8 @@ class EmployerFeesController
             'amount'              => '',
             'currency_code'       => 'ILS',
             'due_date'            => '',
+            'payment_from_date'   => '',   // חדש
+            'payment_to_date'     => '',   // חדש
             'payment_date'        => '',
             'status_code'         => '',
             'payment_method_code' => '',
@@ -61,6 +90,8 @@ class EmployerFeesController
                 'amount'              => $_POST['amount'] ?? '',
                 'currency_code'       => $_POST['currency_code'] ?? 'ILS',
                 'due_date'            => $_POST['due_date'] ?? '',
+                'payment_from_date'   => $_POST['payment_from_date'] ?? '',
+                'payment_to_date'     => $_POST['payment_to_date'] ?? '',
                 'payment_date'        => $_POST['payment_date'] ?? '',
                 'status_code'         => $_POST['status_code'] ?? '',
                 'payment_method_code' => $_POST['payment_method_code'] ?? '',
@@ -68,7 +99,7 @@ class EmployerFeesController
                 'notes'               => $_POST['notes'] ?? '',
             ];
 
-            $errors = EmployerFeesService::validate($data);
+            $errors = EmployerFeesService::validate($data); // יש להתאים את ה-Service לשדות החדשים
             if (!$errors) {
                 try {
                     $m->create($data);
@@ -106,6 +137,8 @@ class EmployerFeesController
                 'amount'              => $_POST['amount'] ?? $item['amount'],
                 'currency_code'       => $_POST['currency_code'] ?? $item['currency_code'],
                 'due_date'            => $_POST['due_date'] ?? $item['due_date'],
+                'payment_from_date'   => $_POST['payment_from_date'] ?? $item['payment_from_date'],
+                'payment_to_date'     => $_POST['payment_to_date'] ?? $item['payment_to_date'],
                 'payment_date'        => $_POST['payment_date'] ?? $item['payment_date'],
                 'status_code'         => $_POST['status_code'] ?? $item['status_code'],
                 'payment_method_code' => $_POST['payment_method_code'] ?? $item['payment_method_code'],

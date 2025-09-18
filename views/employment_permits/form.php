@@ -75,9 +75,9 @@
 
         <div class="d-flex gap-2 mt-4">
             <button class="btn btn-success">שמירה</button>
-            <a class="btn btn-outline-secondary" href="?r=employment_permits&employer_id=<?= e($data['employer_id']) ?>">חזרה לרשימת דרכונים</a>
+            <a class="btn btn-outline-secondary" href="?r=employment_permits&employer_id=<?= e($data['employer_id']) ?>">חזרה להיתרים</a>
             <?php if( isset($data['employer_id']) && $data['employer_id'] !== '' ) : ?>
-            <a class="btn btn-outline-secondary" href="?r=employment_permits/show&id=<?= e($data['employer_id']) ?>">חזרה לכרטיס מעסיק</a>
+            <a class="btn btn-outline-secondary" href="?r=employers/show&id=<?= e($data['employer_id']) ?>">חזרה לכרטיס מעסיק</a>
             <?php endif; ?>            
         </div>
     </form>

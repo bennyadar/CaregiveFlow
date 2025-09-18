@@ -1,10 +1,8 @@
 <?php
-
 /**
  * מודל דמי תאגיד למעסיק (employer_corporate_fees)
- *
  * לוגיקה ב-PHP בלבד; DB לאחסון/שליפה/עדכון/מחיקה.
- * מבנה וסגנון זהים למודול הוויזות (CRUD + רשימות עם סינון/פאג'ינציה).
+ * שמירה על אותו סגנון ומבנה כמו הקיים.
  */
 class EmployerFee
 {
@@ -27,6 +25,8 @@ class EmployerFee
                     amount,
                     currency_code,
                     due_date,
+                    payment_from_date,
+                    payment_to_date,
                     payment_date,
                     status_code,
                     payment_method_code,
@@ -39,6 +39,8 @@ class EmployerFee
                     :amount,
                     :currency_code,
                     :due_date,
+                    :payment_from_date,
+                    :payment_to_date,
                     :payment_date,
                     :status_code,
                     :payment_method_code,
@@ -48,12 +50,14 @@ class EmployerFee
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             ':employer_id'         => (int)($data['employer_id'] ?? 0),
-            ':period_ym'           => trim((string)($data['period_ym'] ?? '')) ?: null, // YYYY-MM
+            ':period_ym'           => trim((string)($data['period_ym'] ?? '')) ?: null, // YYYY-MM (רשות)
             ':fee_type_code'       => $data['fee_type_code'] !== '' ? (int)$data['fee_type_code'] : null,
             ':amount'              => ($data['amount'] ?? '') === '' ? null : (float)$data['amount'],
             ':currency_code'       => trim((string)($data['currency_code'] ?? 'ILS')) ?: 'ILS',
-            ':due_date'            => ($data['due_date'] ?? '') ?: null,
-            ':payment_date'        => ($data['payment_date'] ?? '') ?: null,
+            ':due_date'            => ($data['due_date'] ?? '') ?: null,              // תאריך יעד
+            ':payment_from_date'   => ($data['payment_from_date'] ?? '') ?: null,     // (תשלום) מתאריך
+            ':payment_to_date'     => ($data['payment_to_date'] ?? '') ?: null,       // (תשלום) עד תאריך
+            ':payment_date'        => ($data['payment_date'] ?? '') ?: null,          // מתי שולם בפועל
             ':status_code'         => $data['status_code'] !== '' ? (int)$data['status_code'] : null,
             ':payment_method_code' => $data['payment_method_code'] !== '' ? (int)$data['payment_method_code'] : null,
             ':reference_number'    => trim((string)($data['reference_number'] ?? '')) ?: null,
@@ -71,6 +75,8 @@ class EmployerFee
                        amount = :amount,
                        currency_code = :currency_code,
                        due_date = :due_date,
+                       payment_from_date = :payment_from_date,
+                       payment_to_date = :payment_to_date,
                        payment_date = :payment_date,
                        status_code = :status_code,
                        payment_method_code = :payment_method_code,
@@ -86,6 +92,8 @@ class EmployerFee
             ':amount'              => ($data['amount'] ?? '') === '' ? null : (float)$data['amount'],
             ':currency_code'       => trim((string)($data['currency_code'] ?? 'ILS')) ?: 'ILS',
             ':due_date'            => ($data['due_date'] ?? '') ?: null,
+            ':payment_from_date'   => ($data['payment_from_date'] ?? '') ?: null,
+            ':payment_to_date'     => ($data['payment_to_date'] ?? '') ?: null,
             ':payment_date'        => ($data['payment_date'] ?? '') ?: null,
             ':status_code'         => $data['status_code'] !== '' ? (int)$data['status_code'] : null,
             ':payment_method_code' => $data['payment_method_code'] !== '' ? (int)$data['payment_method_code'] : null,
@@ -160,7 +168,10 @@ class EmployerFee
              LEFT JOIN corporate_fee_type_codes   tc ON tc.corporate_fee_type_code   = f.fee_type_code
              LEFT JOIN payment_method_codes      pmc ON pmc.payment_method_code      = f.payment_method_code
                   $whereSql
-              ORDER BY COALESCE(f.payment_date, '9999-12-31') DESC, COALESCE(f.due_date, '9999-12-31') DESC, f.id DESC
+              ORDER BY COALESCE(f.payment_date, '9999-12-31') DESC,
+                       COALESCE(f.payment_to_date, COALESCE(f.payment_from_date, '9999-12-31')) DESC,
+                       COALESCE(f.due_date, '9999-12-31') DESC,
+                       f.id DESC
                  LIMIT :limit OFFSET :offset";
 
         $stmt = $this->pdo->prepare($sql);
@@ -205,7 +216,99 @@ class EmployerFee
 
         $whereSql = $where ? ('WHERE ' . implode(' AND ', $where)) : '';
         $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM employer_corporate_fees $whereSql");
-        $stmt->execute($params);
+        foreach ($params as $k => $v) {
+            $stmt->bindValue($k, $v);
+        }
+        $stmt->execute();
         return (int)$stmt->fetchColumn();
     }
+
+    /**
+    * מחזיר רשימת מעסיקים שלא שולם עבורם חיוב בתקופה המבוקשת.
+    * תנאי אי-תשלום: אין רשומת fee עם payment_date NOT NULL שחופפת לחודש/תקופה.
+    * חפיפה נבחנת מול period_ym או מול payment_from_date/payment_to_date.
+    * פילטרים נתמכים: period_ym, period_start, period_end (חובה), fee_type_code (רשות).
+    */
+    public function unpaidEmployersForPeriod(array $filters, int $limit = 25, int $offset = 0): array
+    {
+        $periodYm = $filters['period_ym'] ?? null; // YYYY-MM
+        $periodStart = $filters['period_start'] ?? null; // YYYY-MM-DD
+        $periodEnd = $filters['period_end'] ?? null; // YYYY-MM-DD
+        $feeType = $filters['fee_type_code'] ?? null; // רשות
+
+
+        if (!$periodStart || !$periodEnd) {
+            throw new InvalidArgumentException('period_start/period_end נדרשים.');
+        }
+
+
+        $sub = "SELECT 1 FROM employer_corporate_fees f
+                WHERE f.employer_id = er.id
+                AND f.payment_date IS NOT NULL
+                AND (
+                ".($periodYm ? 'f.period_ym = :period_ym OR ' : '')."
+                (f.payment_from_date IS NOT NULL AND f.payment_to_date IS NOT NULL
+                AND f.payment_from_date <= :period_end
+                AND f.payment_to_date >= :period_start)
+                )";
+        if (!empty($feeType)) { $sub .= " AND f.fee_type_code = :fee_type_code"; }
+
+
+        $sql = "SELECT er.id, er.first_name, er.last_name, er.id_number, er.passport_number
+                FROM employers er
+                WHERE NOT EXISTS ($sub)
+                ORDER BY er.last_name, er.first_name
+                LIMIT :limit OFFSET :offset";
+
+
+        $stmt = $this->pdo->prepare($sql);
+        if ($periodYm) { $stmt->bindValue(':period_ym', $periodYm); }
+        $stmt->bindValue(':period_start', $periodStart);
+        $stmt->bindValue(':period_end', $periodEnd);
+        if (!empty($feeType)) { $stmt->bindValue(':fee_type_code', (int)$feeType, PDO::PARAM_INT); }
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
+    public function countUnpaidEmployersForPeriod(array $filters): int
+    {
+        $periodYm = $filters['period_ym'] ?? null;
+        $periodStart = $filters['period_start'] ?? null;
+        $periodEnd = $filters['period_end'] ?? null;
+        $feeType = $filters['fee_type_code'] ?? null;
+
+
+        if (!$periodStart || !$periodEnd) {
+            throw new InvalidArgumentException('period_start/period_end נדרשים.');
+        }
+
+
+        $sub = "SELECT 1 FROM employer_corporate_fees f
+                WHERE f.employer_id = er.id
+                AND f.payment_date IS NOT NULL
+                AND (
+                ".($periodYm ? 'f.period_ym = :period_ym OR ' : '')."
+                (f.payment_from_date IS NOT NULL AND f.payment_to_date IS NOT NULL
+                AND f.payment_from_date <= :period_end
+                AND f.payment_to_date >= :period_start)
+                )";
+        if (!empty($feeType)) { $sub .= " AND f.fee_type_code = :fee_type_code"; }
+
+
+        $sql = "SELECT COUNT(*)
+                FROM employers er
+                WHERE NOT EXISTS ($sub)";
+
+
+        $stmt = $this->pdo->prepare($sql);
+        if ($periodYm) { $stmt->bindValue(':period_ym', $periodYm); }
+        $stmt->bindValue(':period_start', $periodStart);
+        $stmt->bindValue(':period_end', $periodEnd);
+        if (!empty($feeType)) { $stmt->bindValue(':fee_type_code', (int)$feeType, PDO::PARAM_INT); }
+        
+        return $stmt->execute();
+    }    
 }

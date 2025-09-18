@@ -11,89 +11,109 @@
         <?php if (function_exists('csrf_field')) csrf_field(); ?>
 
         <div class="row g-3">
+            <!-- מעסיק -->
             <div class="col-md-6">
                 <label class="form-label">מעסיק</label>
                 <select name="employer_id" class="form-select <?= isset($errors['employer_id'])?'is-invalid':'' ?>">
                     <option value="">— בחר —</option>
                     <?php foreach ($employers as $r): ?>
-                        <?php $sel = ((string)$r['id'] === (string)($data['employer_id'] ?? '')) ? 'selected' : ''; ?>
-                        <option value="<?= e($r['id']) ?>" <?= $sel ?>><?= e($r['last_name'].' '.$r['first_name'].' ('.$r['id_number'].')') ?></option>
+                        <option value="<?= e($r['id']) ?>" <?= ((string)$r['id'] === (string)($data['employer_id'] ?? '')) ? 'selected' : '' ?>><?= e($r['last_name'].' '.$r['first_name'].' ('.($r['id_number'] ?? '').')') ?></option>
                     <?php endforeach; ?>
                 </select>
                 <?php if (isset($errors['employer_id'])): ?><div class="invalid-feedback"><?= e($errors['employer_id']) ?></div><?php endif; ?>
             </div>
 
+            <!-- חודש חיוב -->
             <div class="col-md-3">
                 <label class="form-label">חודש חיוב</label>
                 <input type="month" name="period_ym" value="<?= e($data['period_ym'] ?? '') ?>" class="form-control <?= isset($errors['period_ym'])?'is-invalid':'' ?>">
                 <?php if (isset($errors['period_ym'])): ?><div class="invalid-feedback"><?= e($errors['period_ym']) ?></div><?php endif; ?>
             </div>
 
+            <!-- סוג חיוב -->
             <div class="col-md-3">
                 <label class="form-label">סוג חיוב</label>
                 <select name="fee_type_code" class="form-select <?= isset($errors['fee_type_code'])?'is-invalid':'' ?>">
                     <option value="">— בחר —</option>
-                    <?php foreach ($type_codes as $code=>$name): ?>
-                        <?php $sel = ((string)$code === (string)($data['fee_type_code'] ?? '')) ? 'selected' : ''; ?>
-                        <option value="<?= e($code) ?>" <?= $sel ?>><?= e($name) ?></option>
+                    <?php foreach ($type_codes as $code => $name): ?>
+                        <option value="<?= e($code) ?>" <?= ((string)$code === (string)($data['fee_type_code'] ?? '')) ? 'selected' : '' ?>><?= e($name) ?></option>
                     <?php endforeach; ?>
                 </select>
                 <?php if (isset($errors['fee_type_code'])): ?><div class="invalid-feedback"><?= e($errors['fee_type_code']) ?></div><?php endif; ?>
             </div>
 
-            <div class="col-md-4">
+            <!-- סכום + מטבע -->
+            <div class="col-md-6">
                 <label class="form-label">סכום</label>
                 <div class="input-group">
-                    <input type="number" step="0.01" name="amount" value="<?= e($data['amount'] ?? '') ?>" class="form-control <?= isset($errors['amount'])?'is-invalid':'' ?>">
-                    <select name="currency_code" class="form-select" style="max-width: 120px">
-                        <?php $curr = $data['currency_code'] ?? 'ILS'; ?>
-                        <?php foreach (['ILS'=>'₪ ILS','USD'=>'$ USD','EUR'=>'€ EUR'] as $c=>$lbl): ?>
-                            <option value="<?= e($c) ?>" <?= ($curr===$c?'selected':'') ?>><?= e($lbl) ?></option>
-                        <?php endforeach; ?>
+                    <select name="currency_code" class="form-select" style="max-width:120px">
+                        <option value="ILS" <?= (($data['currency_code'] ?? 'ILS') === 'ILS') ? 'selected' : '' ?>>ILS ₪</option>
+                        <option value="USD" <?= (($data['currency_code'] ?? '') === 'USD') ? 'selected' : '' ?>>USD $</option>
+                        <option value="EUR" <?= (($data['currency_code'] ?? '') === 'EUR') ? 'selected' : '' ?>>EUR €</option>
                     </select>
+                    <input type="number" step="0.01" name="amount" value="<?= e($data['amount'] ?? '') ?>" class="form-control <?= isset($errors['amount'])?'is-invalid':'' ?>" placeholder="0.00">
                 </div>
-                <?php if (isset($errors['amount'])): ?><div class="invalid-feedback"><?= e($errors['amount']) ?></div><?php endif; ?>
+                <?php if (isset($errors['amount'])): ?><div class="invalid-feedback d-block"><?= e($errors['amount']) ?></div><?php endif; ?>
             </div>
 
-            <div class="col-md-4">
-                <label class="form-label">מועד חיוב</label>
-                <input type="date" name="due_date" value="<?= e($data['due_date'] ?? '') ?>" class="form-control">
+            <!-- מועד חיוב (תאריך יעד) -->
+            <div class="col-md-6">
+                <label class="form-label">תאריך אחרון לתשלום</label>
+                <input type="date" name="due_date" value="<?= e($data['due_date'] ?? '') ?>" class="form-control <?= isset($errors['due_date'])?'is-invalid':'' ?>">
+                <?php if (isset($errors['due_date'])): ?><div class="invalid-feedback"><?= e($errors['due_date']) ?></div><?php endif; ?>
             </div>
-            <div class="col-md-4">
-                <label class="form-label">תאריך תשלום</label>
+
+            <!-- תקופת תשלום: מתאריך / עד תאריך (חדש) -->
+            <div class="col-md-6">
+                <label class="form-label">(תשלום) מתאריך</label>
+                <input type="date" name="payment_from_date" value="<?= e($data['payment_from_date'] ?? '') ?>" class="form-control <?= isset($errors['payment_from_date'])?'is-invalid':'' ?>">
+                <?php if (isset($errors['payment_from_date'])): ?><div class="invalid-feedback"><?= e($errors['payment_from_date']) ?></div><?php endif; ?>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">(תשלום) עד תאריך</label>
+                <input type="date" name="payment_to_date" value="<?= e($data['payment_to_date'] ?? '') ?>" class="form-control <?= isset($errors['payment_to_date'])?'is-invalid':'' ?>">
+                <?php if (isset($errors['payment_to_date'])): ?><div class="invalid-feedback"><?= e($errors['payment_to_date']) ?></div><?php endif; ?>
+            </div>
+
+            <!-- מתי שולם בפועל -->
+            <div class="col-md-6">
+                <label class="form-label">מתי שולם בפועל</label>
                 <input type="date" name="payment_date" value="<?= e($data['payment_date'] ?? '') ?>" class="form-control <?= isset($errors['payment_date'])?'is-invalid':'' ?>">
                 <?php if (isset($errors['payment_date'])): ?><div class="invalid-feedback"><?= e($errors['payment_date']) ?></div><?php endif; ?>
             </div>
 
-            <div class="col-md-4">
-                <label class="form-label">סטטוס</label>
-                <select name="status_code" class="form-select <?= isset($errors['status_code'])?'is-invalid':'' ?>">
-                    <option value="">— בחר —</option>
-                    <?php foreach ($status_codes as $code=>$name): ?>
-                        <?php $sel = ((string)$code === (string)($data['status_code'] ?? '')) ? 'selected' : ''; ?>
-                        <option value="<?= e($code) ?>" <?= $sel ?>><?= e($name) ?></option>
-                    <?php endforeach; ?>
-                </select>
-                <?php if (isset($errors['status_code'])): ?><div class="invalid-feedback"><?= e($errors['status_code']) ?></div><?php endif; ?>
-            </div>
-
-            <div class="col-md-4">
+            <!-- אמצעי תשלום -->
+            <div class="col-md-3">
                 <label class="form-label">אמצעי תשלום</label>
                 <select name="payment_method_code" class="form-select <?= isset($errors['payment_method_code'])?'is-invalid':'' ?>">
                     <option value="">— בחר —</option>
-                    <?php foreach ($payment_codes as $code=>$name): ?>
-                        <?php $sel = ((string)$code === (string)($data['payment_method_code'] ?? '')) ? 'selected' : ''; ?>
-                        <option value="<?= e($code) ?>" <?= $sel ?>><?= e($name) ?></option>
+                    <?php foreach ($payment_codes as $code => $name): ?>
+                        <option value="<?= e($code) ?>" <?= ((string)$code === (string)($data['payment_method_code'] ?? '')) ? 'selected' : '' ?>><?= e($name) ?></option>
                     <?php endforeach; ?>
                 </select>
                 <?php if (isset($errors['payment_method_code'])): ?><div class="invalid-feedback"><?= e($errors['payment_method_code']) ?></div><?php endif; ?>
             </div>
 
-            <div class="col-md-4">
-                <label class="form-label">אסמכתא/קבלה</label>
-                <input type="text" name="reference_number" value="<?= e($data['reference_number'] ?? '') ?>" class="form-control">
+            <!-- סטטוס -->
+            <div class="col-md-3">
+                <label class="form-label">סטטוס</label>
+                <select name="status_code" class="form-select <?= isset($errors['status_code'])?'is-invalid':'' ?>">
+                    <option value="">— בחר —</option>
+                    <?php foreach ($status_codes as $code => $name): ?>
+                        <option value="<?= e($code) ?>" <?= ((string)$code === (string)($data['status_code'] ?? '')) ? 'selected' : '' ?>><?= e($name) ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <?php if (isset($errors['status_code'])): ?><div class="invalid-feedback"><?= e($errors['status_code']) ?></div><?php endif; ?>
             </div>
 
+            <!-- אסמכתא/קבלה -->
+            <div class="col-md-6">
+                <label class="form-label">אסמכתא/קבלה</label>
+                <input type="text" name="reference_number" value="<?= e($data['reference_number'] ?? '') ?>" class="form-control <?= isset($errors['reference_number'])?'is-invalid':'' ?>">
+                <?php if (isset($errors['reference_number'])): ?><div class="invalid-feedback"><?= e($errors['reference_number']) ?></div><?php endif; ?>
+            </div>
+
+            <!-- הערות -->
             <div class="col-12">
                 <label class="form-label">הערות</label>
                 <textarea name="notes" rows="3" class="form-control"><?= e($data['notes'] ?? '') ?></textarea>
@@ -102,7 +122,10 @@
 
         <div class="d-flex gap-2 mt-4">
             <button class="btn btn-success">שמירה</button>
-            <a class="btn btn-outline-secondary" href="?r=employer_fees">חזרה לרשימה</a>
+            <a class="btn btn-outline-secondary" href="?r=employer_fees<?= isset($data['employer_id']) && $data['employer_id'] !== '' ? '&employer_id='.e($data['employer_id']) : '' ?>">חזרה לדמי תאגיד</a>
+            <?php if (isset($data['employer_id']) && $data['employer_id'] !== ''): ?>
+                <a class="btn btn-outline-secondary" href="?r=employers/show&id=<?= e($data['employer_id']) ?>">חזרה לכרטיס מעסיק</a>
+            <?php endif; ?>
         </div>
     </form>
 </div>
