@@ -384,4 +384,37 @@
     <a class="btn btn-outline-secondary" href="index.php?r=employees/index">ביטול</a>
   </div>
 </form>
+
+<hr class="my-4">
+
+<?php
+$hasId     = isset($item['id']) && (int)$item['id'] > 0;
+$module    = 'employees';
+$record_id = $hasId ? (int)$item['id'] : 0;
+?>
+
+<div dir="rtl">
+  <h5 class="mb-3">קבצים מצורפים</h5>
+
+  <?php if (!$hasId): ?>
+    <div class="alert alert-info">ניתן להעלות קבצים לאחר יצירת העובד ושמירתו.</div>
+  <?php else: ?>
+    <?php
+      // נטען מודלים פעם אחת
+      require_once __DIR__ . '/../../src/models/FileType.php';
+      require_once __DIR__ . '/../../src/models/File.php';
+
+      // סוגי קבצים לבחירה
+      $fileTypes = (new FileType($pdo))->allActive();
+
+      // טופס עצמאי להעלאת קובץ (אין יותר nested form)
+      include __DIR__ . '/../files/_uploader.php';
+
+      // רשימת קבצים קיימים
+      $files = (new File($pdo))->forRecord($module, $record_id);
+      include __DIR__ . '/../files/_list.php';
+    ?>
+  <?php endif; ?>
+</div>
+
 <?php require __DIR__ . '/../layout/footer.php'; ?>

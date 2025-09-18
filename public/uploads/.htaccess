@@ -1,0 +1,4 @@
+# מניעת הרצת סקריפטים
+<FilesMatch "\.(php|phar|phtml|cgi|pl|sh)$">
+  Require all denied
+</FilesMatch>

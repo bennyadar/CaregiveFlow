@@ -32,6 +32,7 @@ $map = [
     'employment_permits'    => __DIR__ . '/../src/controllers/EmploymentPermitsController.php',
     'employer_fees'         => __DIR__ . '/../src/controllers/EmployerFeesController.php',
     'employer_fee_payments' => __DIR__ . '/../src/controllers/EmployerFeePaymentsController.php',
+    'files'                 => __DIR__ . '/../src/controllers/FilesController.php',
 ];
 
 // אם קונטרולר לא קיים במפה — 404

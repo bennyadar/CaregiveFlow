@@ -1,5 +1,7 @@
-<?php require __DIR__ . '/../layout/header.php'; ?>
 <?php
+require __DIR__ . '/../layout/header.php';
+require_once __DIR__ . '/../../src/models/FileType.php';
+require_once __DIR__ . '/../../src/models/File.php';
 // ===== Maps אופציונליים לשמות קוד→תווית (אם הועברו מהקונטרולר) =====
 $countriesMap = isset($countries) ? array_column($countries, 'name_he', 'country_code') : [];
 $gendersMap   = isset($genders)   ? array_column($genders,   'name_he', 'gender_code')   : [];
@@ -21,6 +23,12 @@ $maritalLabel = function($code) use ($martialsMap) {
     $name = ($code !== '' && isset($martialsMap[$code])) ? $martialsMap[$code] : null;
     return $name ? e($name) . ' (' . e($code) . ')' : e($code);
 };
+
+// ===== partial להעלאת קבצים =====
+// משתנים נדרשים: $module, $record_id, $fileTypes
+$fileTypes = (new FileType($pdo))->allActive();
+$module    = 'employees';
+$record_id = (int)$item['id'];
 
 ?>
 
@@ -142,48 +150,6 @@ $maritalLabel = function($code) use ($martialsMap) {
       </table>
     </div>
   </div>
-
-   <!-- ===== דרכונים =====
-  <div class="card mb-3">
-    <div class="card-header d-flex justify-content-between align-items-center">
-      <span class="fw-semibold">דרכונים</span>
-      <div class="d-flex gap-2">
-        <a class="btn btn-sm btn-success"
-          href="index.php?r=passports/create&employee_id=<?= (int)$item['id'] ?>">+ הוסף דרכון</a>
-        <a class="btn btn-sm btn-outline-primary"
-          href="index.php?r=passports/index&employee_id=<?= (int)$item['id'] ?>">ניהול דרכונים</a>
-      </div>
-    </div>
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-sm table-striped mb-0">
-          <thead>
-            <tr>
-              <th>#</th><th>מס׳ דרכון</th><th>ארץ מנפיקה (MoI)</th><th>הנפקה</th><th>תוקף</th><th>ראשי</th><th class="text-end">פעולות</th>
-            </tr>
-          </thead>
-          <tbody>
-          <?php if (!empty($employee_passports)): foreach ($employee_passports as $p): ?>
-            <tr>
-              <td><?= (int)$p['id'] ?></td>
-              <td><?= e($p['passport_number']) ?></td>
-              <td><?= e($p['name_he']) ?></td>
-              <td><?= e($p['issue_date']) ?></td>
-              <td><?= e($p['expiry_date']) ?></td>
-              <td><?= !empty($p['is_primary']) ? '✔' : '' ?></td>
-              <td class="text-end">
-                <a class="btn btn-sm btn-outline-secondary" href="index.php?r=passports/edit&id=<?= (int)$p['id'] ?>">עריכה</a>
-                <a class="btn btn-sm btn-outline-danger" href="index.php?r=passports/destroy&id=<?= (int)$p['id'] ?>" onclick="return confirm('למחוק?');">מחיקה</a>
-              </td>
-            </tr>
-          <?php endforeach; else: ?>
-            <tr><td colspan="7" class="text-center text-muted py-3">אין דרכונים לעובד זה</td></tr>
-          <?php endif; ?>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div> -->
   
   <!-- ===== כתובת עובד בחו״ל (BAFI 355–430) ===== -->
   <div class="card mb-3 shadow-sm">
@@ -261,6 +227,14 @@ $maritalLabel = function($code) use ($martialsMap) {
     </div>
   </div>
 
+  <!-- Uploader: הוספת קובץ לעובד -->
+  <?php include __DIR__ . '/../files/_uploader.php'; ?>
+  <?php
+    // שליפת קבצים קיימים לעובד
+    $files = (new File($pdo))->forRecord($module, $record_id);
+    // טבלת קבצים מצורפים לעובד (אם יש)s
+    include __DIR__ . '/../files/_list.php';
+  ?>
 </div>
 
 <p class="mt-3">
