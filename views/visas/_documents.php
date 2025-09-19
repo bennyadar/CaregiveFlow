@@ -1,21 +1,23 @@
+<?php
+// ===== views/visas/_documents.php =====
+?>
 <?php /** @var array $item, $documents, $docTypes */ ?>
 <div class="card mt-4">
   <div class="card-header d-flex justify-content-between align-items-center">
     <strong>קבצים מצורפים</strong>
-    <small class="text-muted">לדרכון #<?= e($item['id']) ?> של העובד #<?= e($item['employee_id']) ?></small>
+    <small class="text-muted">לויזה #<?= e($item['id']) ?> של העובד #<?= e($item['employee_id']) ?></small>
   </div>
   <div class="card-body">
-    <!-- טופס העלאה קצר -->
-    <form method="post" enctype="multipart/form-data" class="row gy-2 gx-2 align-items-end" action="?r=passports/upload_document">
+    <form method="post" enctype="multipart/form-data" class="row gy-2 gx-2 align-items-end" action="?r=visas/upload_document">
       <?php if (function_exists('csrf_field')) csrf_field(); ?>
-      <input type="hidden" name="passport_id" value="<?= e($item['id']) ?>">
+      <input type="hidden" name="visa_id" value="<?= e($item['id']) ?>">
       <input type="hidden" name="employee_id" value="<?= e($item['employee_id']) ?>">
 
       <div class="col-md-3">
         <label class="form-label">סוג קובץ</label>
         <select name="doc_type" class="form-select">
-          <option value="passport" selected>דרכון</option>
-          <?php foreach ($docTypes as $code => $name): if ($code==='passport') continue; ?>
+          <option value="visa" selected>ויזה</option>
+          <?php foreach ($docTypes as $code => $name): if ($code==='visa') continue; ?>
             <option value="<?= e($code) ?>"><?= e($name) ?></option>
           <?php endforeach; ?>
         </select>
@@ -46,7 +48,6 @@
       </div>
     </form>
 
-    <!-- טבלה של קבצים קיימים -->
     <div class="table-responsive mt-3">
       <table class="table table-sm align-middle">
         <thead>
@@ -80,10 +81,10 @@
             </td>
             <td><?= nl2br(e($d['notes'] ?? '')) ?></td>
             <td class="text-center">
-              <form method="post" action="?r=passports/delete_document" onsubmit="return confirm('למחוק את הקובץ?');">
+              <form method="post" action="?r=visas/delete_document" onsubmit="return confirm('למחוק את הקובץ?');">
                 <?php if (function_exists('csrf_field')) csrf_field(); ?>
                 <input type="hidden" name="doc_id" value="<?= e($d['id']) ?>">
-                <input type="hidden" name="passport_id" value="<?= e($item['id']) ?>">
+                <input type="hidden" name="visa_id" value="<?= e($item['id']) ?>">
                 <button class="btn btn-sm btn-outline-danger">מחיקה</button>
               </form>
             </td>

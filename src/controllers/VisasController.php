@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/../models/Visa.php';
+require_once __DIR__ . '/../models/EmployeeDocument.php';
 require_once __DIR__ . '/../services/VisaService.php';
+require_once __DIR__ . '/../services/DocumentService.php';
 
 class VisasController
 {
@@ -124,11 +126,23 @@ class VisasController
         $m = new Visa($pdo);
         $id = (int)($_GET['id'] ?? 0);
         $item = $m->find($id);
-        if (!$item) {
-            http_response_code(404);
-            echo 'Not found';
-            return;
+        if (!$item) { flash('ויזה לא נמצאה.', 'danger'); redirect('visas'); }
+
+        $emp = null;
+        if (!empty($item['employee_id'])) {
+            $st = $pdo->prepare('SELECT id, first_name, last_name FROM employees WHERE id = ?');
+            $st->execute([(int)$item['employee_id']]);
+            $emp = $st->fetch(PDO::FETCH_ASSOC) ?: null;
         }
+
+        $docModel  = new EmployeeDocument($pdo);
+        $documents = $docModel->listFor((int)$item['employee_id'], 'employee_visas', (int)$item['id']);
+
+        // סוגי מסמכים לפי מודול ויזות
+        $docTypes = self::document_types($pdo, 'visas');
+
+        // עצמים קיימים אצלך (לדוגמה): status/type/country וכו׳ במידה ויש
+        $data = $item;
 
         // סטטוס נגזר + ימים עד פקיעה לתצוגה
         $derived_status = VisaService::derivedStatus($item['status'], $item['expiry_date']);
@@ -151,6 +165,80 @@ class VisasController
         }
         redirect('visas');
     }
+
+    public static function upload_document(PDO $pdo)
+    {
+        require_login();
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') { redirect('visas'); }
+
+        $visaId    = (int)($_POST['visa_id'] ?? 0);
+        $employeeId= (int)($_POST['employee_id'] ?? 0);
+        $docType   = trim($_POST['doc_type'] ?? '');
+        if ($docType === '') { $docType = 'visa'; } // ברירת מחדל למודול הויזות
+
+        try {
+            if ($visaId <= 0 || $employeeId <= 0) { throw new RuntimeException('נתונים חסרים.'); }
+
+            $svc = new DocumentService($pdo);
+            $relativePath = $svc->storeUploadedFile($_FILES['file'] ?? [], $employeeId, 'visas', $visaId, $docType);
+
+            $docModel = new EmployeeDocument($pdo);
+            $docModel->create([
+                'employee_id'   => $employeeId,
+                'related_table' => 'employee_visas',
+                'related_id'    => $visaId,
+                'doc_type'      => $docType,
+                'file_path'     => $relativePath,
+                'issued_at'     => $_POST['issued_at']  ?: null,
+                'expires_at'    => $_POST['expires_at'] ?: null,
+                'notes'         => $_POST['notes']      ?: null,
+                'uploaded_by'   => (int)($_SESSION['user']['id'] ?? 0),
+            ]);
+
+            flash('הקובץ הועלה בהצלחה.', 'success');
+        } catch (Throwable $e) {
+            flash('שגיאה בהעלאת הקובץ: ' . $e->getMessage(), 'danger');
+        }
+        redirect('visas/view&id=' . $visaId . '&employee_id=' . $employeeId);
+    }
+
+    public static function delete_document(PDO $pdo)
+    {
+        require_login();
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') { redirect('visas'); }
+
+        $docId   = (int)($_POST['doc_id'] ?? 0);
+        $visaId  = (int)($_POST['visa_id'] ?? 0);
+
+        try {
+            $docModel = new EmployeeDocument($pdo);
+            $row = $docModel->find($docId);
+            if (!$row || (int)$row['related_id'] !== $visaId || $row['related_table'] !== 'employee_visas') {
+                throw new RuntimeException('מסמך לא נמצא או לא שייך לויזה זו.');
+            }
+            $svc = new DocumentService($pdo);
+            if (!empty($row['file_path'])) { $svc->deletePhysical($row['file_path']); }
+            $docModel->delete($docId);
+            flash('הקובץ נמחק.', 'success');
+        } catch (Throwable $e) {
+            flash('שגיאה במחיקה: ' . $e->getMessage(), 'danger');
+        }
+        redirect('visas/view&id=' . $visaId . '&employee_id=' . ($row['employee_id'] ?? 0));
+    }
+
+    private static function document_types(PDO $pdo, ?string $moduleKey = null): array
+    {
+        if ($moduleKey) {
+            $st = $pdo->prepare("SELECT code, name_he FROM document_types WHERE is_active=1 AND (module_key=:m OR module_key IS NULL) ORDER BY name_he");
+            $st->execute([':m' => $moduleKey]);
+        } else {
+            $st = $pdo->query("SELECT code, name_he FROM document_types WHERE is_active=1 ORDER BY name_he");
+        }
+        $rows = $st->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        $out = [];
+        foreach ($rows as $r) { $out[(string)$r['code']] = $r['name_he']; }
+        return $out;
+    }    
 
     // ======================== עזר פנימי ========================
 

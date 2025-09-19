@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/../models/Insurance.php';
+require_once __DIR__ . '/../models/EmployeeDocument.php';
+require_once __DIR__ . '/../services/DocumentService.php';
 require_once __DIR__ . '/../services/InsuranceService.php';
 
 class InsurancesController
@@ -139,11 +141,21 @@ class InsurancesController
         $m = new Insurance($pdo);
         $id = (int)($_GET['id'] ?? 0);
         $item = $m->find($id);
-        if (!$item) {
-            http_response_code(404);
-            echo 'Not found';
-            return;
+        if (!$item) { flash('ביטוח לא נמצא.', 'danger'); redirect('insurances'); }
+
+        $emp = null;
+        if (!empty($item['employee_id'])) {
+            $st = $pdo->prepare('SELECT id, first_name, last_name FROM employees WHERE id = ?');
+            $st->execute([(int)$item['employee_id']]);
+            $emp = $st->fetch(PDO::FETCH_ASSOC) ?: null;
         }
+
+        $docModel  = new EmployeeDocument($pdo);
+        $documents = $docModel->listFor((int)$item['employee_id'], 'employee_insurances', (int)$item['id']);
+
+        $docTypes = self::document_types($pdo, 'insurances');
+
+        $data = $item;        
 
         // נגזרים לתצוגה
         $derived_status_code = InsuranceService::derivedStatusCode($item['status_code'] ?? null, $item['expiry_date'] ?? null);
@@ -167,6 +179,80 @@ class InsurancesController
         }
         redirect('insurances');
     }
+
+    public static function upload_document(PDO $pdo)
+    {
+        require_login();
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') { redirect('insurances'); }
+
+        $insuranceId = (int)($_POST['insurance_id'] ?? 0);
+        $employeeId  = (int)($_POST['employee_id'] ?? 0);
+        $docType     = trim($_POST['doc_type'] ?? '');
+        if ($docType === '') { $docType = 'insurance'; } // ברירת מחדל למודול הביטוחים
+
+        try {
+            if ($insuranceId <= 0 || $employeeId <= 0) { throw new RuntimeException('נתונים חסרים.'); }
+
+            $svc = new DocumentService($pdo);
+            $relativePath = $svc->storeUploadedFile($_FILES['file'] ?? [], $employeeId, 'insurances', $insuranceId, $docType);
+
+            $docModel = new EmployeeDocument($pdo);
+            $docModel->create([
+                'employee_id'   => $employeeId,
+                'related_table' => 'employee_insurances',
+                'related_id'    => $insuranceId,
+                'doc_type'      => $docType,
+                'file_path'     => $relativePath,
+                'issued_at'     => $_POST['issued_at']  ?: null,
+                'expires_at'    => $_POST['expires_at'] ?: null,
+                'notes'         => $_POST['notes']      ?: null,
+                'uploaded_by'   => (int)($_SESSION['user']['id'] ?? 0),
+            ]);
+
+            flash('הקובץ הועלה בהצלחה.', 'success');
+        } catch (Throwable $e) {
+            flash('שגיאה בהעלאת הקובץ: ' . $e->getMessage(), 'danger');
+        }
+        redirect('insurances/view&id=' . $insuranceId . '&employee_id=' . $employeeId);
+    }
+
+    public static function delete_document(PDO $pdo)
+    {
+        require_login();
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') { redirect('insurances'); }
+
+        $docId       = (int)($_POST['doc_id'] ?? 0);
+        $insuranceId = (int)($_POST['insurance_id'] ?? 0);
+
+        try {
+            $docModel = new EmployeeDocument($pdo);
+            $row = $docModel->find($docId);
+            if (!$row || (int)$row['related_id'] !== $insuranceId || $row['related_table'] !== 'employee_insurances') {
+                throw new RuntimeException('מסמך לא נמצא או לא שייך לרשומת ביטוח זו.');
+            }
+            $svc = new DocumentService($pdo);
+            if (!empty($row['file_path'])) { $svc->deletePhysical($row['file_path']); }
+            $docModel->delete($docId);
+            flash('הקובץ נמחק.', 'success');
+        } catch (Throwable $e) {
+            flash('שגיאה במחיקה: ' . $e->getMessage(), 'danger');
+        }
+        redirect('insurances/view&id=' . $insuranceId . '&employee_id=' . ($row['employee_id'] ?? 0));
+    }
+
+    private static function document_types(PDO $pdo, ?string $moduleKey = null): array
+    {
+        if ($moduleKey) {
+            $st = $pdo->prepare("SELECT code, name_he FROM document_types WHERE is_active=1 AND (module_key=:m OR module_key IS NULL) ORDER BY name_he");
+            $st->execute([':m' => $moduleKey]);
+        } else {
+            $st = $pdo->query("SELECT code, name_he FROM document_types WHERE is_active=1 ORDER BY name_he");
+        }
+        $rows = $st->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        $out = [];
+        foreach ($rows as $r) { $out[(string)$r['code']] = $r['name_he']; }
+        return $out;
+    }    
 
     // ======================== עזר פנימי ========================
 

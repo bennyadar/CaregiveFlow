@@ -1,6 +1,6 @@
 <?php /** @var array $item, $emp; @var int|string|null $derived_status_code; @var int|null $days_left; @var array $status_codes, $type_codes */ ?>
 <?php require __DIR__ . '/../layout/header.php'; ?>
-<div class="container" dir="rtl" style="max-width: 860px;">
+<div class="container" dir="rtl">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h3 class="m-0">פרטי ביטוח #<?= e($item['id']) ?></h3>
         <div class="d-flex gap-2">
@@ -32,5 +32,6 @@
             </div>
         </div>
     </div>
+    <?php require __DIR__ . '/_documents.php'; ?>
 </div>
 <?php require __DIR__ . '/../layout/footer.php'; ?>
