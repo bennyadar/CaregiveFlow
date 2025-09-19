@@ -70,6 +70,7 @@
                 </div>
             </div>
         </div>
+        <?php require __DIR__ . '/_documents.php'; ?>
     </div>
 </div>
 

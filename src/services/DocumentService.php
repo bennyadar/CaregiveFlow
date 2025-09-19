@@ -44,13 +44,20 @@ class DocumentService
             throw new RuntimeException('גודל קובץ חורג מהמותר.');
         }
 
-        // מבנה תיקיות: /uploads/employees/{employeeId}/{moduleKey}/{recordId}/
-        $targetDir = $this->uploadBase . DIRECTORY_SEPARATOR . 'employees' . DIRECTORY_SEPARATOR . $employeeId . DIRECTORY_SEPARATOR . $moduleKey . DIRECTORY_SEPARATOR . $recordId;
+        // קביעה דינמית של ישות הבעלות (employees/employers)
+        $entityDir = str_starts_with($moduleKey, 'employer_') ? 'employers' : 'employees';
+
+        // /uploads/{entityDir}/{ownerId}/{moduleKey}/{recordId}/
+        $targetDir = $this->uploadBase
+            . DIRECTORY_SEPARATOR . $entityDir
+            . DIRECTORY_SEPARATOR . $ownerId
+            . DIRECTORY_SEPARATOR . $moduleKey
+            . DIRECTORY_SEPARATOR . $recordId;
         if (!is_dir($targetDir)) {
             @mkdir($targetDir, 0775, true);
         }
 
-        // יצירת שם ייחודי על בסיס doc_type + timestamp + hash קצר
+        // שם קובץ: <doc_type>_<YYYYMMDD_HHMMSS>_<hash>.<ext>
         $docSlug = preg_replace('/[^A-Za-z0-9_\-\.]/', '_', strtolower($docType));
         $unique  = $docSlug . '_' . date('Ymd_His') . '_' . substr(sha1($origName . microtime(true)), 0, 8) . '.' . $ext;
         $dest    = $targetDir . DIRECTORY_SEPARATOR . $unique;

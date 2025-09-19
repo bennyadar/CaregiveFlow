@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 19, 2025 at 08:04 PM
+-- Generation Time: Sep 20, 2025 at 01:21 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -2088,6 +2088,32 @@ INSERT INTO `countries` (`country_code`, `name_he`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `document_types`
+--
+
+CREATE TABLE `document_types` (
+  `code` varchar(40) NOT NULL,
+  `name_he` varchar(120) NOT NULL,
+  `module_key` varchar(60) DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `document_types`
+--
+
+INSERT INTO `document_types` (`code`, `name_he`, `module_key`, `is_active`) VALUES
+('employer_fee_receipt', 'אסמכתא לתשלום דמי תאגיד', 'employer_fees', 1),
+('employer_passport', 'דרכון מעסיק', 'employer_passports', 1),
+('employment_permit', 'היתר מעסיק', 'employment_permits', 1),
+('id_card', 'ת.ז מעסיק', 'employers', 1),
+('insurance', 'מסמכי ביטוח', 'insurances', 1),
+('passport', 'דרכון עובד', 'passports', 1),
+('visa', 'ויזה', 'visas', 1);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `employees`
 --
 
@@ -2186,6 +2212,8 @@ INSERT INTO `employees` (`id`, `passport_number`, `country_of_citizenship`, `cou
 CREATE TABLE `employee_documents` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `employee_id` bigint(20) UNSIGNED NOT NULL,
+  `related_table` varchar(60) DEFAULT NULL,
+  `related_id` bigint(20) UNSIGNED DEFAULT NULL,
   `doc_type` varchar(60) NOT NULL,
   `file_path` varchar(255) NOT NULL,
   `issued_at` date DEFAULT NULL,
@@ -2194,6 +2222,13 @@ CREATE TABLE `employee_documents` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `uploaded_by` bigint(20) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `employee_documents`
+--
+
+INSERT INTO `employee_documents` (`id`, `employee_id`, `related_table`, `related_id`, `doc_type`, `file_path`, `issued_at`, `expires_at`, `notes`, `created_at`, `uploaded_by`) VALUES
+(4, 1, 'employee_insurances', 1, 'insurance', '/uploads/employees/1/insurances/1/insurance_20250919_224155_8d8b558b.pdf', '2025-08-01', '2026-07-31', NULL, '2025-09-19 20:41:55', 1);
 
 -- --------------------------------------------------------
 
@@ -2224,7 +2259,7 @@ CREATE TABLE `employee_insurances` (
 
 INSERT INTO `employee_insurances` (`id`, `employee_id`, `policy_number`, `insurer_name`, `insurance_type_code`, `request_date`, `issue_date`, `expiry_date`, `is_primary`, `primary_employee_id`, `status_code`, `notes`, `created_at`, `updated_at`) VALUES
 (1, 1, '1234567', 'הראל', 1, '2025-09-01', '2025-09-02', '2026-09-01', 0, NULL, 2, NULL, '2025-09-03 22:51:32', '2025-09-03 22:51:32'),
-(2, 8, NULL, NULL, NULL, NULL, '2018-09-19', '2019-09-18', 0, NULL, NULL, NULL, '2025-09-08 23:13:30', '2025-09-08 23:13:30');
+(2, 8, '123456', 'הראל', 1, NULL, '2018-09-19', '2019-09-18', 0, NULL, 3, NULL, '2025-09-08 23:13:30', '2025-09-19 20:38:20');
 
 -- --------------------------------------------------------
 
@@ -2348,6 +2383,8 @@ INSERT INTO `employer_corporate_fees` (`id`, `employer_id`, `period_ym`, `fee_ty
 CREATE TABLE `employer_documents` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `employer_id` bigint(20) UNSIGNED NOT NULL,
+  `related_table` varchar(60) DEFAULT NULL,
+  `related_id` bigint(20) UNSIGNED DEFAULT NULL,
   `doc_type` varchar(60) NOT NULL,
   `file_path` varchar(255) NOT NULL,
   `issued_at` date DEFAULT NULL,
@@ -51692,6 +51729,13 @@ ALTER TABLE `countries`
   ADD PRIMARY KEY (`country_code`);
 
 --
+-- Indexes for table `document_types`
+--
+ALTER TABLE `document_types`
+  ADD PRIMARY KEY (`code`),
+  ADD KEY `idx_doc_types_module` (`module_key`);
+
+--
 -- Indexes for table `employees`
 --
 ALTER TABLE `employees`
@@ -51724,8 +51768,10 @@ ALTER TABLE `employees`
 --
 ALTER TABLE `employee_documents`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_empdoc_emp` (`employee_id`),
-  ADD KEY `ix_empdoc_uploader` (`uploaded_by`);
+  ADD KEY `ix_empdoc_uploader` (`uploaded_by`),
+  ADD KEY `idx_empdocs_related` (`employee_id`,`related_table`,`related_id`),
+  ADD KEY `idx_empdocs_type` (`doc_type`),
+  ADD KEY `idx_empdocs_created` (`created_at`);
 
 --
 -- Indexes for table `employee_insurances`
@@ -52011,7 +52057,7 @@ ALTER TABLE `employees`
 -- AUTO_INCREMENT for table `employee_documents`
 --
 ALTER TABLE `employee_documents`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `employee_insurances`
@@ -52041,7 +52087,7 @@ ALTER TABLE `employer_corporate_fees`
 -- AUTO_INCREMENT for table `employer_documents`
 --
 ALTER TABLE `employer_documents`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `employer_passports`
