@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 18, 2025 at 08:41 PM
+-- Generation Time: Sep 19, 2025 at 08:04 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -2175,7 +2175,7 @@ CREATE TABLE `employees` (
 INSERT INTO `employees` (`id`, `passport_number`, `country_of_citizenship`, `country_symbol_moi`, `last_name`, `last_name_he`, `first_name_he`, `first_name`, `father_name_en`, `mother_name_en`, `gender_code`, `marital_status_code`, `birth_date`, `phone`, `phone_prefix_il`, `phone_number_il`, `phone_alt`, `email`, `city_code`, `street_code`, `house_no`, `apartment`, `zipcode`, `abroad_city`, `abroad_street`, `abroad_house_no`, `abroad_postal_code`, `entry_date`, `visa_type`, `visa_expiry`, `work_permit_number`, `work_permit_issue`, `work_permit_expiry`, `is_active`, `employment_status_code`, `status_change_date`, `notes`, `record_type_code`, `mana_type_code`, `remarks_internal`, `created_at`, `updated_at`, `passport_issue_date`, `passport_expiry_date`, `country_code`, `phone_mobile`, `phone_home`, `id_type_code`, `id_number`, `visa_type_code`, `arrival_date`, `bank_name`, `bank_branch`, `bank_account`, `bank_foreign_country_code`, `bank_city_foreign`, `bank_street_foreign`, `bank_house_no_foreign`, `bank_code_foreign`, `bank_name_foreign`, `bank_branch_code_foreign`, `bank_branch_name_foreign`, `bank_swift`, `bank_iban`, `beneficiary_last_name`, `beneficiary_first_name`, `permit_number_bafi`, `spouse_name_en`, `spouse_in_israel`, `representative_abroad_name`, `health_ins_issue_date`, `health_ins_expiry`, `metash_mana_number`, `metash_registration_date`) VALUES
 (1, 'P5475160A', 131, 131, 'MANICAD', 'מניקד', 'טרזה', 'TERESA', 'EDMUNDO ANTONIO', 'TOMASA VILLON', 2, 2, '1969-06-17', '0503124156', '050', '3124156', NULL, NULL, 5000, 2345, '25', NULL, NULL, NULL, NULL, NULL, NULL, '2014-10-25', NULL, NULL, '979476117', NULL, '2021-02-28', 1, NULL, NULL, NULL, NULL, NULL, NULL, '2025-08-25 19:22:21', '2025-09-06 22:15:15', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'NELSON MANICAD', 0, 'NYD', '2018-10-29', '2019-10-28', NULL, NULL),
 (2, 'EC5352219', 131, NULL, 'FUERTEZ', 'פיורטז', 'מארי', 'MARY', 'GENARO CATAVONA', 'EVELYN ESTEBAN', 2, 2, '1986-05-18', NULL, '050', '3126674', NULL, NULL, 5000, 2307, '26', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-08 20:41:45', '2025-09-12 21:00:25', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'NYD', NULL, NULL, NULL, NULL),
-(8, 'P2682971A', 131, NULL, 'EVANGELISTA', 'אונג\'ליסטא', 'טרז שילה', 'THERESE SHIELA', 'CRISOSTOMO PADERNAL', 'ANGELINA GUMBAN', 2, 2, '1989-08-06', NULL, '050', '3192956', NULL, NULL, 5000, 2247, '16', NULL, NULL, NULL, NULL, NULL, NULL, '2018-03-28', NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-08 23:13:29', '2025-09-15 06:40:58', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'CRISTOPHER EVANGELIS', 0, 'NYD', NULL, NULL, '809962', '2018-01-24');
+(8, 'P2682971A', 131, NULL, 'EVANGELISTA', 'אונג\'ליסטא', 'טרז שילה', 'THERESE SHIELA', 'CRISOSTOMO PADERNAL', 'ANGELINA GUMBAN', 2, 2, '1989-08-06', NULL, '050', '3192956', NULL, NULL, 5000, 2247, '16', NULL, NULL, NULL, NULL, NULL, NULL, '2018-03-28', NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, 'תעודת זהות', NULL, NULL, NULL, '2025-09-08 23:13:29', '2025-09-18 22:55:46', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'CRISTOPHER EVANGELIS', 0, 'NYD', NULL, NULL, '809962', '2018-01-24');
 
 -- --------------------------------------------------------
 
@@ -2320,6 +2320,8 @@ CREATE TABLE `employer_corporate_fees` (
   `amount` decimal(12,2) DEFAULT NULL,
   `currency_code` char(3) NOT NULL DEFAULT 'ILS',
   `due_date` date DEFAULT NULL,
+  `payment_from_date` date DEFAULT NULL,
+  `payment_to_date` date DEFAULT NULL,
   `payment_date` date DEFAULT NULL,
   `status_code` tinyint(3) UNSIGNED DEFAULT NULL,
   `payment_method_code` tinyint(3) UNSIGNED DEFAULT NULL,
@@ -2333,9 +2335,9 @@ CREATE TABLE `employer_corporate_fees` (
 -- Dumping data for table `employer_corporate_fees`
 --
 
-INSERT INTO `employer_corporate_fees` (`id`, `employer_id`, `period_ym`, `fee_type_code`, `amount`, `currency_code`, `due_date`, `payment_date`, `status_code`, `payment_method_code`, `reference_number`, `notes`, `created_at`, `updated_at`) VALUES
-(1, 1, '2025-09', 1, 59.00, 'ILS', '2025-09-01', '2025-09-01', 2, 3, NULL, NULL, '2025-09-03 23:55:06', '2025-09-03 23:55:06'),
-(2, 3, '2025-10', 1, 70.00, 'ILS', '2025-09-01', '2025-09-03', 2, 1, '12364', NULL, '2025-09-09 19:43:10', '2025-09-09 19:43:10');
+INSERT INTO `employer_corporate_fees` (`id`, `employer_id`, `period_ym`, `fee_type_code`, `amount`, `currency_code`, `due_date`, `payment_from_date`, `payment_to_date`, `payment_date`, `status_code`, `payment_method_code`, `reference_number`, `notes`, `created_at`, `updated_at`) VALUES
+(1, 1, '2025-09', 1, 59.00, 'ILS', '2025-09-01', '2025-09-01', '2025-09-30', '2025-09-01', 2, 3, NULL, NULL, '2025-09-03 23:55:06', '2025-09-18 19:31:48'),
+(2, 3, '2025-10', 1, 70.00, 'ILS', '2025-09-01', '2025-10-01', '2025-10-31', '2025-09-03', 2, 1, '12364', NULL, '2025-09-09 19:43:10', '2025-09-18 19:31:48');
 
 -- --------------------------------------------------------
 
@@ -2569,6 +2571,64 @@ CREATE TABLE `export_jobs` (
 
 INSERT INTO `export_jobs` (`id`, `export_type`, `requested_by`, `created_at`, `status`, `notes`) VALUES
 (49, 'BAFI', 1, '2025-09-12 21:49:04', 'done', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `files`
+--
+
+CREATE TABLE `files` (
+  `file_id` bigint(20) UNSIGNED NOT NULL,
+  `module` varchar(50) NOT NULL,
+  `record_id` bigint(20) UNSIGNED NOT NULL,
+  `file_type_code` varchar(50) NOT NULL,
+  `original_name` varchar(255) NOT NULL,
+  `stored_name` varchar(255) NOT NULL,
+  `mime_type` varchar(150) DEFAULT NULL,
+  `size_bytes` bigint(20) UNSIGNED DEFAULT NULL,
+  `checksum_sha1` char(40) DEFAULT NULL,
+  `notes` varchar(500) DEFAULT NULL,
+  `uploaded_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `uploaded_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp(),
+  `is_deleted` tinyint(1) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `files`
+--
+
+INSERT INTO `files` (`file_id`, `module`, `record_id`, `file_type_code`, `original_name`, `stored_name`, `mime_type`, `size_bytes`, `checksum_sha1`, `notes`, `uploaded_by`, `uploaded_at`, `updated_at`, `is_deleted`) VALUES
+(1, 'employees', 8, 'passport', 'Caregiveflow Project.pdf', '4d46ed4bd916f99162e18b7b4d4d48c5.pdf', 'application/pdf', 36837, '8a0606020a0f2baf8fa87a607d1f65cd3cdae234', 'צילום דרכון', NULL, '2025-09-19 01:46:25', '2025-09-19 02:26:46', 1),
+(2, 'employees', 8, 'teudat_zehut', 'pwa-setup-guide.pdf', 'e996115f40fd9850c6f99045dd7c454d.pdf', 'application/pdf', 389102, 'b4240c8211844eb78b7578ab411976e8eed1666d', 'תעודת זהות', NULL, '2025-09-19 02:11:21', '2025-09-19 02:26:43', 1),
+(3, 'employees', 8, 'insurance_docs', 'Caregive Flow — אפיון מפורט (v0.9.2) — 01.09.pdf', '15052c4565f9f193a66ccea96041507c.pdf', 'application/pdf', 88804, '7e875458a8347169b66e0d45a9f01371837ad404', 'ביטוח בריאות', NULL, '2025-09-19 02:24:04', '2025-09-19 02:26:39', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `file_types`
+--
+
+CREATE TABLE `file_types` (
+  `file_type_code` varchar(50) NOT NULL,
+  `name_he` varchar(100) NOT NULL,
+  `name_en` varchar(100) DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `sort_order` int(11) NOT NULL DEFAULT 100
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `file_types`
+--
+
+INSERT INTO `file_types` (`file_type_code`, `name_he`, `name_en`, `is_active`, `sort_order`) VALUES
+('employer_fee_proof', 'אסמכתא לתשלום דמי תאגיד', 'Employer Fee Proof', 1, 30),
+('employer_permit', 'היתר מעסיק', 'Employer Permit', 1, 40),
+('insurance_docs', 'מסמכי ביטוח', 'Insurance Documents', 1, 60),
+('passport', 'דרכון', 'Passport', 1, 10),
+('teudat_zehut', 'ת.ז', 'National ID', 1, 20),
+('visa', 'ויזה', 'Visa', 1, 50);
 
 -- --------------------------------------------------------
 
@@ -51721,7 +51781,10 @@ ALTER TABLE `employer_corporate_fees`
   ADD KEY `idx_status` (`status_code`),
   ADD KEY `idx_type` (`fee_type_code`),
   ADD KEY `idx_due` (`due_date`),
-  ADD KEY `idx_payment` (`payment_date`);
+  ADD KEY `idx_payment` (`payment_date`),
+  ADD KEY `idx_emprfees_employer` (`employer_id`),
+  ADD KEY `idx_emprfees_payment_date` (`payment_date`),
+  ADD KEY `idx_emprfees_payment_period` (`payment_from_date`,`payment_to_date`);
 
 --
 -- Indexes for table `employer_documents`
@@ -51798,6 +51861,23 @@ ALTER TABLE `export_files`
 ALTER TABLE `export_jobs`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_export_user` (`requested_by`);
+
+--
+-- Indexes for table `files`
+--
+ALTER TABLE `files`
+  ADD PRIMARY KEY (`file_id`),
+  ADD KEY `idx_files_module_record` (`module`,`record_id`,`is_deleted`),
+  ADD KEY `idx_files_type` (`file_type_code`,`is_deleted`),
+  ADD KEY `idx_files_uploaded_at` (`uploaded_at`),
+  ADD KEY `fk_files_user` (`uploaded_by`);
+
+--
+-- Indexes for table `file_types`
+--
+ALTER TABLE `file_types`
+  ADD PRIMARY KEY (`file_type_code`),
+  ADD KEY `idx_file_types_active` (`is_active`,`sort_order`);
 
 --
 -- Indexes for table `gender_codes`
@@ -51988,6 +52068,12 @@ ALTER TABLE `export_jobs`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
+-- AUTO_INCREMENT for table `files`
+--
+ALTER TABLE `files`
+  MODIFY `file_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT for table `home_visits`
 --
 ALTER TABLE `home_visits`
@@ -52108,6 +52194,13 @@ ALTER TABLE `export_files`
 --
 ALTER TABLE `export_jobs`
   ADD CONSTRAINT `fk_export_user` FOREIGN KEY (`requested_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE SET NULL;
+
+--
+-- Constraints for table `files`
+--
+ALTER TABLE `files`
+  ADD CONSTRAINT `fk_files_type` FOREIGN KEY (`file_type_code`) REFERENCES `file_types` (`file_type_code`),
+  ADD CONSTRAINT `fk_files_user` FOREIGN KEY (`uploaded_by`) REFERENCES `users` (`id`);
 
 --
 -- Constraints for table `home_visits`
