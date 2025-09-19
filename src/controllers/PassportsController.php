@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/../models/Passport.php';
+require_once __DIR__ . '/../models/EmployeeDocument.php';
 require_once __DIR__ . '/../services/PassportService.php';
+require_once __DIR__ . '/../services/DocumentService.php';
 
 class PassportsController
 {
@@ -94,11 +96,28 @@ class PassportsController
         $m = new Passport($pdo);
         $id = (int)($_GET['id'] ?? 0);
         $item = $m->find($id);
-        if (!$item) {
-            http_response_code(404);
-            echo 'Not found';
-            return;
+        if (!$item) { flash('דרכון לא נמצא.', 'danger'); redirect('passports'); }
+
+        // עובד של הדרכון
+        $emp = null;
+        if (!empty($item['employee_id'])) {
+            $st = $pdo->prepare('SELECT id, first_name, last_name FROM employees WHERE id = ?');
+            $st->execute([(int)$item['employee_id']]);
+            $emp = $st->fetch(PDO::FETCH_ASSOC) ?: null;
         }
+
+        // קבצים מצורפים
+        $docModel = new EmployeeDocument($pdo);
+        $documents = $docModel->listFor((int)$item['employee_id'], 'employee_passports', (int)$item['id']);
+
+        // סוגי מסמכים (מסנן לפי מודול = passports; אם אין – כל הפעילים)
+        $docTypes = self::document_types($pdo, 'passports');
+
+        $status_codes  = self::status_codes($pdo);
+        $type_codes    = self::type_codes($pdo);
+        $country_codes = self::country_codes($pdo);
+
+        $data = $item; // כפי שקיים אצלך        
 
         // סטטוס נגזר + ימים עד פקיעה לתצוגה
         $derived_status = PassportService::derivedStatusCode($item['status_code'], $item['expiry_date']);
@@ -175,6 +194,99 @@ class PassportsController
         }
         redirect('passports');
     }
+
+    /**
+     * העלאת קובץ עבור דרכון ספציפי
+     */
+    public static function upload_document(PDO $pdo)
+    {
+        require_login();
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') { redirect('passports'); }
+
+        $passportId = (int)($_POST['passport_id'] ?? 0);
+        $employeeId = (int)($_POST['employee_id'] ?? 0);
+        $docType    = trim($_POST['doc_type'] ?? '');
+
+        try {
+            if ($passportId <= 0 || $employeeId <= 0) {
+                throw new RuntimeException('נתונים חסרים.');
+            }
+            if ($docType === '') {
+                throw new RuntimeException('בחר סוג קובץ.');
+            }
+
+            $svc = new DocumentService($pdo);
+            $relativePath = $svc->storeUploadedFile($_FILES['file'] ?? [], $employeeId, 'passports', $passportId, $docType);
+
+            $docModel = new EmployeeDocument($pdo);
+            $docModel->create([
+                'employee_id'   => $employeeId,
+                'related_table' => 'employee_passports',
+                'related_id'    => $passportId,
+                'doc_type'      => $docType, // נשמר כ-code מתוך document_types
+                'file_path'     => $relativePath,
+                'issued_at'     => $_POST['issued_at']  ?: null,
+                'expires_at'    => $_POST['expires_at'] ?: null,
+                'notes'         => $_POST['notes']      ?: null,
+                'uploaded_by'   => (int)($_SESSION['user']['id'] ?? 0),
+            ]);
+
+            flash('הקובץ הועלה בהצלחה.', 'success');
+        } catch (Throwable $e) {
+            flash('שגיאה בהעלאת הקובץ: ' . $e->getMessage(), 'danger');
+        }
+
+        redirect('passports/view&id=' . $passportId . '&employee_id=' . ($employeeId ?? ''));
+    }
+
+    /**
+     * מחיקת קובץ קיים
+     */
+    public static function delete_document(PDO $pdo)
+    {
+        require_login();
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') { redirect('passports'); }
+
+        $docId      = (int)($_POST['doc_id'] ?? 0);
+        $passportId = (int)($_POST['passport_id'] ?? 0);
+
+        try {
+            $docModel = new EmployeeDocument($pdo);
+            $row = $docModel->find($docId);
+            if (!$row || (int)$row['related_id'] !== $passportId || $row['related_table'] !== 'employee_passports') {
+                throw new RuntimeException('מסמך לא נמצא או לא שייך לדרכון זה.');
+            }
+
+            // מחיקת קובץ פיזי
+            $svc = new DocumentService($pdo);
+            if (!empty($row['file_path'])) {
+                $svc->deletePhysical($row['file_path']);
+            }
+            // מחיקת רשומה
+            $docModel->delete($docId);
+            flash('הקובץ נמחק.', 'success');
+        } catch (Throwable $e) {
+            flash('שגיאה במחיקה: ' . $e->getMessage(), 'danger');
+        }
+
+        redirect('passports/view&id=' . $passportId . '&employee_id=' . ($row['employee_id'] ?? ''));
+    }
+
+    // ===== עזר: שליפת קודי סוגי מסמכים =====
+    private static function document_types(PDO $pdo, ?string $moduleKey = null): array
+    {
+        if ($moduleKey) {
+            $st = $pdo->prepare("SELECT code, name_he FROM document_types WHERE is_active = 1 AND (module_key = :m OR module_key IS NULL) ORDER BY name_he");
+            $st->execute([':m' => $moduleKey]);
+        } else {
+            $st = $pdo->query("SELECT code, name_he FROM document_types WHERE is_active = 1 ORDER BY name_he");
+        }
+        $rows = $st->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        $out = [];
+        foreach ($rows as $r) { $out[(string)$r['code']] = $r['name_he']; }
+        return $out;
+    }
+
 
     // ======================== עזר פנימי ========================
 
