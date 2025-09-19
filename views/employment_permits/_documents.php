@@ -13,8 +13,8 @@
       <div class="col-md-3">
         <label class="form-label">סוג קובץ</label>
         <select name="doc_type" class="form-select">
-          <option value="employer_permit" selected>היתר מעסיק</option>
-          <?php foreach ($docTypes as $code => $name): if ($code==='employer_permit') continue; ?>
+          <option value="employment_permit" selected>היתר מעסיק</option>
+          <?php foreach ($docTypes as $code => $name): if ($code==='employment_permit') continue; ?>
             <option value="<?= e($code) ?>"><?= e($name) ?></option>
           <?php endforeach; ?>
         </select>

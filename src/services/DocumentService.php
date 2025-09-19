@@ -45,7 +45,8 @@ class DocumentService
         }
 
         // קביעה דינמית של ישות הבעלות (employees/employers)
-        $entityDir = str_starts_with($moduleKey, 'employer_') ? 'employers' : 'employees';
+        $employerModules = ['employer_passports','employment_permits','employer_fees'];
+        $entityDir = in_array($moduleKey, $employerModules, true) ? 'employers' : 'employees';
 
         // /uploads/{entityDir}/{ownerId}/{moduleKey}/{recordId}/
         $targetDir = $this->uploadBase

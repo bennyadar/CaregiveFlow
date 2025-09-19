@@ -130,11 +130,11 @@ class EmploymentPermitsController
         $m  = new EmploymentPermit($pdo);
         $id = (int)($_GET['id'] ?? 0);
         $item = $m->find($id);
-        if (!$item) { flash('היתר העסקה לא נמצא.', 'danger'); redirect('employer_permits'); }
+        if (!$item) { flash('היתר העסקה לא נמצא.', 'danger'); redirect('employment_permits'); }
 
-        $docModel = new EmployerDocument($pdo);
-        $documents = $docModel->listFor((int)$item['employer_id'], 'employer_permits', (int)$item['id']);
-        $docTypes = self::document_types($pdo, 'employer_permits');
+        $docModel  = new EmployerDocument($pdo);
+        $documents = $docModel->listFor((int)$item['employer_id'], 'employment_permits', (int)$item['id']);
+        $docTypes  = self::document_types($pdo, 'employment_permits');
 
         $data = $item;
 
@@ -174,7 +174,7 @@ class EmploymentPermitsController
         $permitId  = (int)($_POST['permit_id'] ?? 0);
         $employerId= (int)($_POST['employer_id'] ?? 0);
         $docType   = trim($_POST['doc_type'] ?? '');
-        if ($docType === '') { $docType = 'employer_permit'; }
+        if ($docType === '') { $docType = 'employment_permit'; }
 
         try {
             if ($permitId <= 0 || $employerId <= 0) { throw new RuntimeException('נתונים חסרים.'); }

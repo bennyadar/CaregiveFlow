@@ -16,7 +16,7 @@ class EmployerDocument
 
     public function find(int $id): ?array
     {
-        $st = $this->pdo->prepare("SELECT * FROM employee_documents WHERE id = ?");
+        $st = $this->pdo->prepare("SELECT * FROM employer_documents WHERE id = ?");
         $st->execute([$id]);
         $row = $st->fetch(PDO::FETCH_ASSOC);
         return $row ?: null;
@@ -28,8 +28,8 @@ class EmployerDocument
     public function listFor(int $employerId, string $relatedTable, int $relatedId): array
     {
         $st = $this->pdo->prepare("SELECT *
-                                     FROM employee_documents
-                                    WHERE employee_id = :oid
+                                     FROM employer_documents
+                                    WHERE employer_id = :oid
                                       AND related_table = :rt
                                       AND related_id = :rid
                                     ORDER BY created_at DESC, id DESC");
