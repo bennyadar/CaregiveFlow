@@ -2,24 +2,24 @@
 <div class="card mt-4">
   <div class="card-header d-flex justify-content-between align-items-center">
     <strong>קבצים מצורפים</strong>
-    <small class="text-muted">להיתר #<?= e($item['id']) ?> של מעסיק #<?= e($item['employer_id']) ?></small>
+    <small class="text-muted">לדמי תאגיד #<?= e($item['id']) ?> של מעסיק #<?= e($item['employer_id']) ?></small>
   </div>
   <div class="card-body">
-    <form method="post" enctype="multipart/form-data" class="row gy-2 gx-2 align-items-end" action="?r=employment_permits/upload_document">
+    <form method="post" enctype="multipart/form-data" class="row gy-2 gx-2 align-items-end" action="?r=employer_fees/upload_document">
       <?php if (function_exists('csrf_field')) csrf_field(); ?>
-      <input type="hidden" name="permit_id" value="<?= e($item['id']) ?>">
+      <input type="hidden" name="fee_id" value="<?= e($item['id']) ?>">
 
-      <div class="col-md-3">
+      <div class="col-md-4">
         <label class="form-label">סוג קובץ</label>
         <select name="doc_type" class="form-select">
-          <option value="employer_permit" selected>היתר מעסיק</option>
-          <?php foreach ($docTypes as $code => $name): if ($code==='employer_permit') continue; ?>
+          <option value="employer_fee_receipt" selected>אסמכתא לתשלום דמי תאגיד</option>
+          <?php foreach ($docTypes as $code => $name): if ($code==='employer_fee_receipt') continue; ?>
             <option value="<?= e($code) ?>"><?= e($name) ?></option>
           <?php endforeach; ?>
         </select>
       </div>
 
-      <div class="col-md-4">
+      <div class="col-md-3">
         <label class="form-label">קובץ</label>
         <input type="file" name="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png,.gif,.webp" required>
       </div>
@@ -77,10 +77,10 @@
             </td>
             <td><?= nl2br(e($d['notes'] ?? '')) ?></td>
             <td class="text-center">
-              <form method="post" action="?r=employment_permits/delete_document" onsubmit="return confirm('למחוק את הקובץ?');">
+              <form method="post" action="?r=employer_fees/delete_document" onsubmit="return confirm('למחוק את הקובץ?');">
                 <?php if (function_exists('csrf_field')) csrf_field(); ?>
                 <input type="hidden" name="doc_id" value="<?= e($d['id']) ?>">
-                <input type="hidden" name="permit_id" value="<?= e($item['id']) ?>">
+                <input type="hidden" name="fee_id" value="<?= e($item['id']) ?>">
                 <button class="btn btn-sm btn-outline-danger">מחיקה</button>
               </form>
             </td>

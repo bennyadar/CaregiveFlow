@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/../models/EmployerFee.php';
+require_once __DIR__ . '/../models/EmployerDocument.php';
+require_once __DIR__ . '/../services/DocumentService.php';
 require_once __DIR__ . '/../services/EmployerFeesService.php';
 
 class EmployerFeesController
@@ -171,7 +173,13 @@ class EmployerFeesController
         $m = new EmployerFee($pdo);
         $id = (int)($_GET['id'] ?? 0);
         $item = $m->find($id);
-        if (!$item) { http_response_code(404); echo 'Not found'; return; }
+        if (!$item) { flash('רשומת דמי תאגיד לא נמצאה.', 'danger'); redirect('employer_fees'); }
+
+        $docModel  = new EmployerDocument($pdo);
+        $documents = $docModel->listFor((int)$item['employer_id'], 'employer_fees', (int)$item['id']);
+        $docTypes  = self::document_types($pdo, 'employer_fees');
+
+        $data = $item;
 
         $emp   = self::employer_brief($pdo, (int)$item['employer_id']);
         $status_name  = self::status_codes($pdo)[$item['status_code']] ?? null;
@@ -189,6 +197,90 @@ class EmployerFeesController
         if ($id) { $m->delete($id); }
         redirect('employer_fees');
     }
+
+    public static function upload_document(PDO $pdo)
+    {
+        require_login();
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') { redirect('employer_fees'); }
+
+        $feeId     = (int)($_POST['fee_id'] ?? 0);
+        $docType   = trim($_POST['doc_type'] ?? '');
+        if ($docType === '') { $docType = 'employer_fee_receipt'; }
+
+        try {
+            if ($feeId <= 0) { throw new RuntimeException('נתונים חסרים.'); }
+
+            // מקור אמת ל-employer_id
+            $fee = (new EmployerFee($pdo))->find($feeId);
+            if (!$fee || empty($fee['employer_id'])) {
+                throw new RuntimeException('לא נמצאה רשומת דמי תאגיד/מעסיק.');
+            }
+            $employerId = (int)$fee['employer_id'];
+
+            $chk = $pdo->prepare('SELECT 1 FROM employers WHERE id = ?');
+            $chk->execute([$employerId]);
+            if (!$chk->fetchColumn()) { throw new RuntimeException('מעסיק לא קיים.'); }
+
+            $svc = new DocumentService($pdo);
+            $relativePath = $svc->storeUploadedFile($_FILES['file'] ?? [], $employerId, 'employer_fees', $feeId, $docType);
+
+            $docModel = new EmployerDocument($pdo);
+            $docModel->create([
+                'employer_id'   => $employerId,
+                'related_table' => 'employer_fees',
+                'related_id'    => $feeId,
+                'doc_type'      => $docType,
+                'file_path'     => $relativePath,
+                'issued_at'     => $_POST['issued_at']  ?: null,
+                'expires_at'    => $_POST['expires_at'] ?: null,
+                'notes'         => $_POST['notes']      ?: null,
+                'uploaded_by'   => (int)($_SESSION['user']['id'] ?? 0),
+            ]);
+
+            flash('הקובץ הועלה בהצלחה.', 'success');
+        } catch (Throwable $e) {
+            flash('שגיאה בהעלאת הקובץ: ' . $e->getMessage(), 'danger');
+        }
+        redirect('employer_fees/view&id=' . $feeId . '&employer_id=' . $employerId);
+    }
+
+    public static function delete_document(PDO $pdo)
+    {
+        require_login();
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') { redirect('employer_fees'); }
+
+        $docId  = (int)($_POST['doc_id'] ?? 0);
+        $feeId  = (int)($_POST['fee_id'] ?? 0);
+
+        try {
+            $docModel = new EmployerDocument($pdo);
+            $row = $docModel->find($docId);
+            if (!$row || (int)$row['related_id'] !== $feeId || $row['related_table'] !== 'employer_fees') {
+                throw new RuntimeException('מסמך לא נמצא או לא שייך לרשומת דמי תאגיד זו.');
+            }
+            $svc = new DocumentService($pdo);
+            if (!empty($row['file_path'])) { $svc->deletePhysical($row['file_path']); }
+            $docModel->delete($docId);
+            flash('הקובץ נמחק.', 'success');
+        } catch (Throwable $e) {
+            flash('שגיאה במחיקה: ' . $e->getMessage(), 'danger');
+        }
+        redirect('employer_fees/view&id=' . $feeId . '&employer_id=' . ($row['employer_id'] ?? 0));
+    }
+
+    private static function document_types(PDO $pdo, ?string $moduleKey = null): array
+    {
+        if ($moduleKey) {
+            $st = $pdo->prepare("SELECT code, name_he FROM document_types WHERE is_active=1 AND (module_key=:m OR module_key IS NULL) ORDER BY name_he");
+            $st->execute([':m' => $moduleKey]);
+        } else {
+            $st = $pdo->query("SELECT code, name_he FROM document_types WHERE is_active=1 ORDER BY name_he");
+        }
+        $rows = $st->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        $out = [];
+        foreach ($rows as $r) { $out[(string)$r['code']] = $r['name_he']; }
+        return $out;
+    }    
 
     // ======================== עזר פנימי ========================
 

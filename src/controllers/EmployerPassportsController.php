@@ -140,7 +140,7 @@ class EmployerPassportsController
         $documents = $docModel->listFor((int)$item['employer_id'], 'employer_passports', (int)$item['id']);
         $docTypes  = self::document_types($pdo, 'employer_passports');
 
-        $data = $item;        
+        $data = $item;       
 
         $emp = self::employer_brief($pdo, (int)$item['employer_id']);
         $status_name = self::status_codes($pdo)[$item['status_code']] ?? null;
@@ -168,19 +168,29 @@ class EmployerPassportsController
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') { redirect('employer_passports'); }
 
         $passportId = (int)($_POST['passport_id'] ?? 0);
-        $employerId = (int)($_POST['employer_id'] ?? 0);
         $docType    = trim($_POST['doc_type'] ?? '');
         if ($docType === '') { $docType = 'employer_passport'; }
 
         try {
-            if ($passportId <= 0 || $employerId <= 0) { throw new RuntimeException('נתונים חסרים.'); }
+            if ($passportId <= 0) { throw new RuntimeException('נתונים חסרים.'); }
+
+            // מקור אמת ל-employer_id
+            $passport = (new EmployerPassport($pdo))->find($passportId);
+            if (!$passport || empty($passport['employer_id'])) {
+                throw new RuntimeException('לא נמצאה רשומת דרכון/מעסיק.');
+            }
+            $employerId = (int)$passport['employer_id'];
+
+            $chk = $pdo->prepare('SELECT 1 FROM employers WHERE id = ?');
+            $chk->execute([$employerId]);
+            if (!$chk->fetchColumn()) { throw new RuntimeException('מעסיק לא קיים.'); }
 
             $svc = new DocumentService($pdo);
             $relativePath = $svc->storeUploadedFile($_FILES['file'] ?? [], $employerId, 'employer_passports', $passportId, $docType);
 
             $docModel = new EmployerDocument($pdo);
             $docModel->create([
-                'employee_id'   => $employerId,         // Owner id כללי (שם עמודה נשאר היסטורית)
+                'employer_id'   => $employerId,
                 'related_table' => 'employer_passports',
                 'related_id'    => $passportId,
                 'doc_type'      => $docType,

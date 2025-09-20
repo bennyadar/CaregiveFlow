@@ -7,7 +7,6 @@
  */
 ?>
 <?php require __DIR__ . '/../layout/header.php'; ?>
-
 <div class="container" dir="rtl">
     <!-- כותרת + פעולות -->
     <div class="d-flex justify-content-between align-items-center mb-3">

@@ -143,6 +143,7 @@
         </div>
 
     </div>
+    <?php require __DIR__ . '/_documents.php'; ?>
 </div>
 
 <?php require __DIR__.'/../layout/footer.php'; ?>

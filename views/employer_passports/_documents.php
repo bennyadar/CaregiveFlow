@@ -8,7 +8,6 @@
     <form method="post" enctype="multipart/form-data" class="row gy-2 gx-2 align-items-end" action="?r=employer_passports/upload_document">
       <?php if (function_exists('csrf_field')) csrf_field(); ?>
       <input type="hidden" name="passport_id" value="<?= e($item['id']) ?>">
-      <input type="hidden" name="employer_id" value="<?= e($item['employer_id']) ?>">
 
       <div class="col-md-3">
         <label class="form-label">סוג קובץ</label>

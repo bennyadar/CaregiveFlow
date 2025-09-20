@@ -172,19 +172,29 @@ class EmploymentPermitsController
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') { redirect('employment_permits'); }
 
         $permitId  = (int)($_POST['permit_id'] ?? 0);
-        $employerId= (int)($_POST['employer_id'] ?? 0);
         $docType   = trim($_POST['doc_type'] ?? '');
-        if ($docType === '') { $docType = 'employment_permit'; }
+        if ($docType === '') { $docType = 'employer_permit'; }
 
         try {
-            if ($permitId <= 0 || $employerId <= 0) { throw new RuntimeException('נתונים חסרים.'); }
+            if ($permitId <= 0) { throw new RuntimeException('נתונים חסרים.'); }
+
+            // מקור אמת ל-employer_id
+            $permit = (new EmploymentPermit($pdo))->find($permitId);
+            if (!$permit || empty($permit['employer_id'])) {
+                throw new RuntimeException('לא נמצאה רשומת היתר/מעסיק.');
+            }
+            $employerId = (int)$permit['employer_id'];
+
+            $chk = $pdo->prepare('SELECT 1 FROM employers WHERE id = ?');
+            $chk->execute([$employerId]);
+            if (!$chk->fetchColumn()) { throw new RuntimeException('מעסיק לא קיים.'); }
 
             $svc = new DocumentService($pdo);
             $relativePath = $svc->storeUploadedFile($_FILES['file'] ?? [], $employerId, 'employment_permits', $permitId, $docType);
 
             $docModel = new EmployerDocument($pdo);
             $docModel->create([
-                'employee_id'   => $employerId,
+                'employer_id'   => $employerId,
                 'related_table' => 'employment_permits',
                 'related_id'    => $permitId,
                 'doc_type'      => $docType,
@@ -214,7 +224,7 @@ class EmploymentPermitsController
             $docModel = new EmployerDocument($pdo);
             $row = $docModel->find($docId);
             if (!$row || (int)$row['related_id'] !== $permitId || $row['related_table'] !== 'employment_permits') {
-                throw new RuntimeException('מסמך לא נמצא או לא שייך להיתר זה.');    
+                throw new RuntimeException('מסמך לא נמצא או לא שייך להיתר זה.');
             }
             $svc = new DocumentService($pdo);
             if (!empty($row['file_path'])) { $svc->deletePhysical($row['file_path']); }
@@ -238,7 +248,7 @@ class EmploymentPermitsController
         $out = [];
         foreach ($rows as $r) { $out[(string)$r['code']] = $r['name_he']; }
         return $out;
-    }    
+    }  
 
     // ======================== עזר פנימי ========================
 

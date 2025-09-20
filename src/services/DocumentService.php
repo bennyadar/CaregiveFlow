@@ -23,12 +23,11 @@ class DocumentService
      * שמירת קובץ שהועלה בפועל + החזרת נתיב יחסי שישמר ב-DB
      * $file הוא $_FILES['file']
      */
-    public function storeUploadedFile(array $file, int $employeeId, string $moduleKey, int $recordId, string $docType = 'file'): string
+        public function storeUploadedFile(array $file, int $ownerId, string $moduleKey, int $recordId, string $docType = 'file'): string
     {
         if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
             throw new RuntimeException('שגיאה בהעלאת הקובץ.');
         }
-        // ולידציות בסיסיות
         $allowedExt = ['pdf','jpg','jpeg','png','gif','webp'];
         $maxBytes   = 15 * 1024 * 1024; // 15MB
 
@@ -44,7 +43,7 @@ class DocumentService
             throw new RuntimeException('גודל קובץ חורג מהמותר.');
         }
 
-        // קביעה דינמית של ישות הבעלות (employees/employers)
+        // קביעה דינמית: מודולי מעסיק לעומת עובד
         $employerModules = ['employer_passports','employment_permits','employer_fees'];
         $entityDir = in_array($moduleKey, $employerModules, true) ? 'employers' : 'employees';
 
@@ -67,12 +66,11 @@ class DocumentService
             throw new RuntimeException('שמירת הקובץ נכשלה.');
         }
 
-        // נתיב יחסי לשמירה ב-DB (לטובת קישורים ב-View)
         $relative = str_replace($this->publicBase(), '', $dest);
         $relative = ltrim(str_replace(DIRECTORY_SEPARATOR, '/', $relative), '/');
-        return '/' . $relative; // לדוגמה: /uploads/employees/12/passports/34/file.pdf
+        return '/' . $relative;
     }
-
+    
     /**
      * מחיקת קובץ פיזי (במידה וקיים)
      */

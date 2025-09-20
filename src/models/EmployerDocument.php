@@ -1,7 +1,7 @@
 <?php
 /**
  * מודל: מסמכים למעסיק (EmployerDocument)
- * שימוש בטבלת employee_documents כהיסטורית — העמודה employee_id משמשת כאן כ-owner_id של המעסיק.
+ * עובד מול employer_documents (עם FK ל-employers)
  * אחריות: DB בלבד (CRUD). ללא טיפול בקבצים פיזיים.
  */
 class EmployerDocument
@@ -23,18 +23,18 @@ class EmployerDocument
     }
 
     /**
-     * רשימת מסמכים לפי מעסיק וקישור מודול ספציפי (לדוגמה employer_passports + passport_id)
+     * רשימת מסמכים לפי מעסיק וקישור מודול ספציפי
      */
     public function listFor(int $employerId, string $relatedTable, int $relatedId): array
     {
         $st = $this->pdo->prepare("SELECT *
                                      FROM employer_documents
-                                    WHERE employer_id = :oid
+                                    WHERE employer_id = :eid
                                       AND related_table = :rt
                                       AND related_id = :rid
                                     ORDER BY created_at DESC, id DESC");
         $st->execute([
-            ':oid' => $employerId,
+            ':eid' => $employerId,
             ':rt'  => $relatedTable,
             ':rid' => $relatedId,
         ]);
@@ -43,17 +43,17 @@ class EmployerDocument
 
     /**
      * יצירה
-     * $data כולל: employer_id (ימופה ל-employee_id), related_table, related_id, doc_type, file_path, issued_at, expires_at, notes, uploaded_by
+     * $data כולל: employer_id, related_table, related_id, doc_type, file_path, issued_at, expires_at, notes, uploaded_by
      */
     public function create(array $data): int
     {
         $sql = "INSERT INTO employer_documents
                    (employer_id, related_table, related_id, doc_type, file_path, issued_at, expires_at, notes, uploaded_by)
                 VALUES
-                   (:owner_id, :related_table, :related_id, :doc_type, :file_path, :issued_at, :expires_at, :notes, :uploaded_by)";
+                   (:employer_id, :related_table, :related_id, :doc_type, :file_path, :issued_at, :expires_at, :notes, :uploaded_by)";
         $st = $this->pdo->prepare($sql);
         $st->execute([
-            ':owner_id'     => (int)$data['employer_id'],
+            ':employer_id'  => (int)$data['employer_id'],
             ':related_table'=> $data['related_table'] ?? null,
             ':related_id'   => isset($data['related_id']) ? (int)$data['related_id'] : null,
             ':doc_type'     => (string)$data['doc_type'],
