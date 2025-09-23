@@ -384,7 +384,7 @@ class ExportsController
             return str_pad($s, $len, ' ', STR_PAD_RIGHT);
         }
         $he_s_len = $len + strlen($s)/2; // הערכה גסה של אורך תווים בעברית
-        return str_pad($s, $he_s_len, ' ', STR_PAD_RIGHT);
+        return str_pad($s, (int)$he_s_len, ' ', STR_PAD_RIGHT);
     }
     private static function numPad($val, int $len): string
     {
@@ -407,7 +407,16 @@ class ExportsController
             $bureau = (string)($row['bureau_number'] ?? '');
         }
         if ($bureau === '') { $bureau = '0000000000'; }
-        return 'oz_siud_manot_' . $bureau . '_' . $employeeId . '.txt';
+
+        // שמירה על אזור זמן מקומי מבלי לשנות גלובלית
+        $now = new DateTime('now', new DateTimeZone('Asia/Jerusalem'));
+        $stamp = $now->format('Ymd_His'); // e.g. 20250924_001523
+
+        // 4 ספרות אקראיות מאובטחות (cryptographically secure)
+        $rand5 = random_int(10000, 99999);
+        $unique     = $stamp . '_' . $rand5;
+
+        return 'oz_siud_manot_' . $bureau . '_' . $employeeId . '_' . $unique .'.txt';
     }
 
     /** DATA line 705 — מחזיר null אם אין שיבוץ לעובד */

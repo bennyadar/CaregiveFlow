@@ -361,6 +361,7 @@
 
   <hr class="mt-4">
   <!-- מת"ש - מספר מנה -->
+  <h2 class="h6">מת"ש</h2>
   <div class="col-md-2">
     <label class="form-label">מת"ש - מספר מנה</label>
     <input type="text" name="metash_mana_number" maxlength="20" class="form-control"
@@ -374,6 +375,7 @@
           value="<?= e($item['metash_registration_date'] ?? '') ?>">
   </div>
 
+  <h2 class="h6">הערות</h2>
   <div class="col-12">
     <label class="form-label">הערות</label>
     <textarea name="notes" class="form-control" rows="3"><?= e($item['notes'] ?? '') ?></textarea>
@@ -384,7 +386,7 @@
     <a class="btn btn-outline-secondary" href="index.php?r=employees/index">ביטול</a>
   </div>
 </form>
-
+<!--
 <hr class="my-4">
 
 <?php
@@ -416,5 +418,5 @@ $record_id = $hasId ? (int)$item['id'] : 0;
     ?>
   <?php endif; ?>
 </div>
-
+  -->
 <?php require __DIR__ . '/../layout/footer.php'; ?>

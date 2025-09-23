@@ -228,12 +228,12 @@ $record_id = (int)$item['id'];
   </div>
 
   <!-- Uploader: הוספת קובץ לעובד -->
-  <?php include __DIR__ . '/../files/_uploader.php'; ?>
+  <?php //include __DIR__ . '/../files/_uploader.php'; ?>
   <?php
     // שליפת קבצים קיימים לעובד
-    $files = (new File($pdo))->forRecord($module, $record_id);
+    //$files = (new File($pdo))->forRecord($module, $record_id);
     // טבלת קבצים מצורפים לעובד (אם יש)s
-    include __DIR__ . '/../files/_list.php';
+    //include __DIR__ . '/../files/_list.php';
   ?>
 </div>
 
