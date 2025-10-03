@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/../Services/HomeVisitsXlsxBuilder.php';
+
 class ExportsController
 {
         /**
@@ -589,6 +591,33 @@ class ExportsController
             redirect('exports/piba'); // יוצא מיד
         }
     }
+
+    /** GET: index.php?r=exports/home_visits_xlsx */
+    public static function home_visits_xlsx(PDO $pdo): void
+    {
+        require_login(); // כמו אצלכם ב-PIBA
+
+        // פילטרים זהים למסך הרשימה:
+        $filters = [
+            'employee_id' => $_GET['employee_id'] ?? null,
+            'status_codes' => !empty($_GET['status_codes']) ? (array)$_GET['status_codes'] : [],
+            'type_codes' => !empty($_GET['type_codes']) ? (array)$_GET['type_codes'] : [],
+            'stage_codes' => !empty($_GET['stage_codes']) ? (array)$_GET['stage_codes'] : [],
+            'placement_type_codes' => !empty($_GET['placement_type_codes']) ? (array)$_GET['placement_type_codes'] : [],
+            'followup_required' => isset($_GET['followup_required']) ? $_GET['followup_required'] : '',
+            'date_from' => $_GET['date_from'] ?? null,
+            'date_to' => $_GET['date_to'] ?? null,
+        ];
+        $limit = (int)($_GET['limit'] ?? 50000);
+
+        $builder = new HomeVisitsXlsxBuilder($pdo);
+        $res = $builder->build($filters, $limit); // ['filename','content']
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $res['filename'] . '"');
+        echo $res['content'];
+        exit;
+    }    
 
 
 }

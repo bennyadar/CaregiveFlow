@@ -44,5 +44,5 @@
 <?php // מעביר את הנתונים מהקונטרולר ל-JS (ללא תלות ב-VIEWים) ?>
 <script>window.placementsChartData = <?= json_encode($chartData ?? ['labels'=>[],'active'=>[]], JSON_UNESCAPED_UNICODE) ?>;</script>
 <script src="assets/js/chart-placements.js"></script>
-<script src="assets/js/chart-placements.js?v=<?= filemtime(__DIR__ . '/../../assets/js/chart-placements.js') ?>"></script>
+<!--<script src="assets/js/chart-placements.js?v=<?//= filemtime(__DIR__ . '/../../assets/js/chart-placements.js') ?>"></script>-->
 <?php require __DIR__ . '/../layout/footer.php'; ?>
