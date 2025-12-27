@@ -1,0 +1,22 @@
+{
+    "name": "benny/caregive-flow",
+    "autoload": {
+        "psr-4": {
+            "Benny\\CaregiveFlow\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "bennyadar",
+            "email": "bennyad@gmail.com"
+        }
+    ],
+    "require": {
+        "phpoffice/phpspreadsheet": "^5.2"
+    },
+      "config": {
+    "platform": {
+      "php": "8.2.12"
+    }
+  }
+}
