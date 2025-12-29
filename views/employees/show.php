@@ -42,6 +42,7 @@ $record_id = (int)$item['id'];
       <a class="btn btn-outline-secondary" href="index.php?r=passports&employee_id=<?= e($item['id']) ?>">דרכונים</a>
       <a class="btn btn-outline-secondary" href="index.php?r=visas&employee_id=<?= e($item['id']) ?>">ויזות</a>
       <a class="btn btn-outline-secondary" href="index.php?r=insurances&employee_id=<?= e($item['id']) ?>">ביטוחים</a>
+      <a class="btn btn-outline-secondary" href="index.php?r=home_visits&employee_id=<?= e($item['id']) ?>">ביקורי בית</a>
       <!-- ייצוא: מרוכז ל-dropdown אחד -->
       <div class="btn-group" role="group">
         <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">

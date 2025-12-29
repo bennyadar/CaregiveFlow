@@ -84,3 +84,12 @@ function date_to_string(?string $date): string {
 function pre_print($v, $exit = 0): void {
     echo '<pre>' . print_r($v, true) . '</pre>';
 }   
+
+/**
+ * עדכון פרמטרים ב-query string תוך שמירה על הקיימים.
+ */
+function update_query(array $params = []): string {
+    $current = $_GET ?? [];
+    $merged = array_merge($current, $params);
+    return '?' . http_build_query($merged, '', '&', PHP_QUERY_RFC3986);
+}

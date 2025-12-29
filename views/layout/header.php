@@ -29,6 +29,7 @@ $role = $u['role'] ?? null;
           <li class="nav-item"><a class="nav-link" href="index.php?r=employees/index">עובדים</a></li>
           <li class="nav-item"><a class="nav-link" href="index.php?r=employers/index">מעסיקים</a></li>
           <li class="nav-item"><a class="nav-link" href="index.php?r=placements/index">שיבוצים</a></li>
+          <li class="nav-item"><a class="nav-link" href="index.php?r=home_visits">ביקורי בית</a></li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">דו"חות</a>
             <ul class="dropdown-menu">
