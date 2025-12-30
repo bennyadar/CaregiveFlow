@@ -221,6 +221,7 @@ class EmployeesController {
         $cities = $codes->cities();
         $streets = [];
         $passport_type_codes = $codes->passport_type_codes();
+        $genders = $codes->genders();
 
         require __DIR__ . '/../../views/employees/form.php';
     }

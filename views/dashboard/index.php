@@ -1,5 +1,5 @@
 <?php require __DIR__ . '/../layout/header.php'; ?>
-<h1 class="h4 mb-4">דשבורד</h1>
+<h1 class="h4 mb-4">ראשי</h1>
 <?php if (isset($stats) && $stats): ?>
 <div class="row g-3 mb-4">
   <div class="col-sm-6 col-lg-3">

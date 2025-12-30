@@ -24,7 +24,7 @@ $role = $u['role'] ?? null;
     <div class="collapse navbar-collapse" id="navbars">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <?php if ($u): ?>
-          <li class="nav-item"><a class="nav-link" href="index.php?r=dashboard/index">דשבורד</a></li>
+          <li class="nav-item"><a class="nav-link" href="index.php?r=dashboard/index">ראשי</a></li>
           <li class="nav-item"><a class="nav-link" href="index.php?r=agency_settings/index">פרטי לשכה</a></li>
           <li class="nav-item"><a class="nav-link" href="index.php?r=employees/index">עובדים</a></li>
           <li class="nav-item"><a class="nav-link" href="index.php?r=employers/index">מעסיקים</a></li>

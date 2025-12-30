@@ -29,13 +29,14 @@ $backHref = $selected_employee_id
     <?php unset($_SESSION['flash']); ?>
   <?php endif; ?>
 
-<div class="d-flex justify-content-end mb-3">
+<div class="d-flex justify-content-end mb-3 gap-2">
   <a id="backToEmployee"
      href="<?= e($backHref) ?>"
      class="btn btn-outline-secondary"
      <?= empty($selected_employee_id) ? 'style="display:none;"' : '' ?>>
     חזרה לעובד
   </a>
+  <a class="btn btn-outline-secondary" href="index.php?r=employees/index">חזרה לרשימת עובדים</a>
 </div>
 
   <form method="post" action="?r=exports/piba_export" class="card p-3">
@@ -51,8 +52,9 @@ $backHref = $selected_employee_id
           </option>
         <?php endforeach; ?>
       </select>
-      <button class="btn btn-primary">ייצור והורדה</button>
-      <a class="btn btn-outline-secondary" href="index.php?r=employees/index">חזרה לרשימת עובדים</a>
+      <div class="d-flex justify-content-end mt-4">
+        <button class="btn btn-primary">ייצור והורדה</button>
+      </div>
     </div>
   </form>
 </div>

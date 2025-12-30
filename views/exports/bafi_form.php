@@ -7,6 +7,24 @@
     <div class="alert alert-warning"><?php echo e($_SESSION['flash']); unset($_SESSION['flash']); ?></div>
   <?php endif; ?>
 
+  <?php
+    // נתיב “חזרה לעובד” (עדכן אם ההצגה אצלך במסלול אחר)
+    $employeeShowRoute = 'employees/show';
+    $backHref = $selected_employee_id
+        ? 'index.php?r=' . $employeeShowRoute . '&id=' . urlencode((string)$selected_employee_id)
+        : 'index.php?r=employees/index';
+  ?>
+
+  <div class="d-flex justify-content-end mb-4 gap-2">
+  <a id="backToEmployee"
+     href="<?= e($backHref) ?>"
+     class="btn btn-outline-secondary"
+     <?= empty($selected_employee_id) ? 'style="display:none;"' : '' ?>>
+    חזרה לעובד
+  </a>
+  <a class="btn btn-outline-secondary" href="index.php?r=employees/index">חזרה לרשימת עובדים</a>
+</div>
+
   <form method="post" action="?r=exports/run" class="row g-3">
       
     <!-- עובד לבחירה + Preselect -->

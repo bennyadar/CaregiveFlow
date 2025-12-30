@@ -20,7 +20,6 @@ $map = [
     'employees'             => __DIR__ . '/../src/controllers/EmployeesController.php',
     'employers'             => __DIR__ . '/../src/controllers/EmployersController.php',
     'placements'            => __DIR__ . '/../src/controllers/PlacementsController.php',
-    'reports'               => __DIR__ . '/../src/controllers/ReportsController.php',
     'dashboard'             => __DIR__ . '/../src/controllers/DashboardController.php',
     'agency_settings'       => __DIR__ . '/../src/controllers/AgencySettingsController.php',
     'exports'               => __DIR__ . '/../src/controllers/ExportsController.php',

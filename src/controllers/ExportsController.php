@@ -20,6 +20,8 @@ class ExportsController
         $employees = $pdo->query("SELECT id, id_number, last_name, first_name FROM employees ORDER BY id DESC")
                          ->fetchAll(PDO::FETCH_ASSOC);
 
+        $selected_employee_id = $_GET['employee_id'] ?? $selected_employee_id;
+
         // טבלאות קוד למסכים (מותאם לשמות עמודות שהיו במודל)
         $record_type_codes = $pdo->query("
             SELECT record_type_code, name_he
@@ -552,6 +554,7 @@ class ExportsController
         // טופס בחירת עובד (בדומה ל-bafi_form)
         $employees = $pdo->query("SELECT id, passport_number, last_name_he, first_name_he FROM employees ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
         $selected_employee_id = $_SESSION['old']['employee_id'] ?? null;
+        $selected_employee_id = $_GET['employee_id'] ?? $selected_employee_id;
         unset($_SESSION['old']);
         require __DIR__ . '/../../views/exports/piba_form.php';
     }
