@@ -1,0 +1,615 @@
+/* CaregiveFlow Styles — AdminLTE-inspired (RTL + Light) */
+
+/*
+  Brand palette (derived from CaregiveFlow logo)
+  Primary (blue):   #5898E0
+  Secondary (teal): #60C090
+  Border (soft):    #B5CED7
+  Background (soft):#ECF1F1
+*/
+
+/* =========================
+   Brand tokens
+   ========================= */
+
+:root{
+  /* Layout */
+  --cf-topbar-height: 64px;      /* גובה ה-Navbar העליון (ניתן לכוונון) */
+  --cf-sidebar-width: 290px;     /* רוחב הסרגל הימני */
+  --cf-sidebar-mini-width: 86px; /* רוחב סרגל במצב Mini */
+
+  /* Brand */
+  --cf-primary: #5898E0;
+  --cf-secondary: #60C090;
+  --cf-border: #B5CED7;
+
+  /* Surfaces */
+  --cf-bg: #ECF1F1;
+  --cf-surface: #FFFFFF;
+  --cf-surface-2: #F8FAFC;
+
+  /* Typography */
+  --cf-text: #1F2A37;
+  --cf-text-muted: #4B5563;
+
+  /* States */
+  --cf-hover-bg: rgba(88, 152, 224, .10);
+  --cf-active-bg: rgba(88, 152, 224, .18);
+  --cf-active-border: rgba(88, 152, 224, .55);
+
+  /* Elevation */
+  --cf-shadow-1: 0 1px 2px rgba(16, 24, 40, .06), 0 1px 3px rgba(16, 24, 40, .10);
+}
+
+/* =========================
+   Topbar / Navbar
+   ========================= */
+
+/* Navbar matches logo vibe (light, clean, not flat) */
+.navbar-soft {
+  background-color: var(--cf-surface) !important;
+  border-bottom: 2px solid var(--cf-secondary);
+  box-shadow: 0 1px 10px rgba(16, 24, 40, .05);
+  height: var(--cf-topbar-height);
+}
+
+/* Logo */
+.brand-logo{
+  height: 36px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+/* Page background */
+body {
+  background-color: var(--cf-bg);
+  color: var(--cf-text);
+}
+
+/* Content containers */
+.cf-content {
+  padding-top: 1.25rem;
+  padding-bottom: 1.25rem;
+}
+
+/* Tables look like cards */
+.table-responsive {
+  background: var(--cf-surface);
+  padding: 1rem;
+  border-radius: .75rem;
+  box-shadow: var(--cf-shadow-1);
+  border: 1px solid rgba(181, 206, 215, .45);
+}
+
+/* Forms look like cards */
+.cf-content form {
+  background: var(--cf-surface);
+  padding: 1rem;
+  border-radius: .75rem;
+  box-shadow: var(--cf-shadow-1);
+  border: 1px solid rgba(181, 206, 215, .45);
+}
+
+/* Keep existing card visuals nice */
+.card { border: 1px solid rgba(181, 206, 215, .35); box-shadow: var(--cf-shadow-1); border-radius: .75rem; }
+
+/* Sidebar */
+.sidebar-card { border-radius: .75rem; }
+.sidebar-card .list-group-item { border-color: rgba(181, 206, 215, .55); }
+.sidebar-card .list-group-item.active {
+  background-color: var(--cf-active-bg);
+  border-color: rgba(181, 206, 215, .55);
+  color: var(--cf-text);
+}
+
+/* =========================
+   AdminLTE-inspired RIGHT Sidebar (LIGHT + Full height)
+   ========================= */
+
+/* (variables moved to top) */
+
+.cf-app{ min-height: 100vh; }
+
+/* Sidebar קבוע בצד ימין – צמוד לגבול המסך כמו AdminLTE */
+.cf-sidebar{
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: var(--cf-sidebar-width);
+  height: 100vh;
+  overflow-y: auto;
+
+  background: var(--cf-surface);
+  color: var(--cf-text);
+  border-left: 1px solid rgba(181, 206, 215, .65);
+  border-radius: 0;
+  box-shadow: none;
+
+  /* keep above content */
+  z-index: 1030;
+}
+
+/* Brand rail (inner edge) – adds presence while staying LIGHT */
+.cf-sidebar::before{
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;              /* inner edge towards content */
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, var(--cf-primary), var(--cf-secondary));
+  opacity: .95;
+  pointer-events: none;
+}
+
+/* Ensure rail stays behind sidebar content */
+.cf-sidebar > *{ position: relative; z-index: 1; }
+
+/* כאשר יש Sidebar – מייצרים מקום בסרגל העליון כדי שלא "ייכנס" מעליו */
+@media (min-width: 992px) {
+  body.has-cf-sidebar .navbar{
+    margin-right: var(--cf-sidebar-width);
+    position: sticky;
+    top: 0;
+    z-index: 1031;
+  }
+
+  /* Sidebar הוא הניווט הראשי – מסתירים את הניווט הכפול ב-Topbar (משאירים brand + user/logout) */
+  body.has-cf-sidebar .navbar-nav.me-auto{ display: none; }
+}
+
+/* =========================
+   Sidebar Mini (Collapse) – כמו AdminLTE
+   ========================= */
+
+@media (min-width: 992px) {
+  body.cf-sidebar-mini{
+    --cf-sidebar-width: var(--cf-sidebar-mini-width);
+  }
+
+  body.cf-sidebar-mini .cf-brand-text,
+  body.cf-sidebar-mini .cf-user-meta,
+  body.cf-sidebar-mini .cf-sidebar-search,
+  body.cf-sidebar-mini .cf-sidebar-section-title,
+  body.cf-sidebar-mini .cf-nav-text,
+  body.cf-sidebar-mini .cf-nav-arrow,
+  body.cf-sidebar-mini .cf-sidebar-actions .cf-btn-text,
+  body.cf-sidebar-mini .cf-sidebar-footer .cf-btn-text{
+    display: none !important;
+  }
+
+  body.cf-sidebar-mini .cf-sidebar-brand{
+    padding: .75rem .5rem;
+  }
+  body.cf-sidebar-mini .cf-brand-link{
+    justify-content: center;
+  }
+
+  body.cf-sidebar-mini .cf-sidebar-user{
+    justify-content: center;
+    padding: .8rem .5rem;
+  }
+
+  body.cf-sidebar-mini .cf-nav-item{
+    justify-content: center;
+    padding: .65rem .5rem;
+  }
+
+  body.cf-sidebar-mini .cf-nav-icon{
+    width: auto;
+  }
+
+  body.cf-sidebar-mini .cf-sidebar-footer .btn,
+  body.cf-sidebar-mini .cf-sidebar-actions .btn{
+    padding-left: .55rem;
+    padding-right: .55rem;
+  }
+
+  body.cf-sidebar-mini .cf-sidebar-actions{ 
+    padding: .6rem .6rem .9rem .6rem;
+  }
+}
+
+/* Toggle button minor polish */
+.cf-sidebar-toggle{ border-radius: .6rem; }
+
+/* Breadcrumbs */
+.cf-breadcrumb .breadcrumb{
+  --bs-breadcrumb-divider: '›';
+}
+.cf-breadcrumb a{ text-decoration: none; }
+
+/* התוכן הראשי מקבל מקום לסרגל */
+.cf-main{ margin-right: var(--cf-sidebar-width); }
+
+.cf-sidebar a{ color: inherit; text-decoration: none; }
+
+.cf-sidebar-brand{
+  background: var(--cf-surface);
+  padding: .85rem .9rem;
+  border-bottom: 2px solid var(--cf-secondary);
+}
+
+.cf-brand-link{
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+}
+
+.cf-brand-logo{
+  width: auto;
+  height: 34px;
+  border-radius: .5rem;
+  object-fit: cover;
+  margin: auto;
+}
+
+.cf-brand-text{ font-weight: 800; letter-spacing: .2px; color: var(--cf-text); }
+
+.cf-sidebar-user{
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .9rem;
+  border-bottom: 1px solid rgba(181, 206, 215, .45);
+}
+
+.cf-user-avatar{
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(88, 152, 224, .10);
+  color: var(--cf-primary);
+}
+
+.cf-user-name{ font-weight: 700; line-height: 1.1; }
+.cf-user-role{ font-size: .8rem; color: var(--cf-text-muted); }
+
+.cf-sidebar-search{ padding: .75rem .9rem; }
+.cf-sidebar-search .input-group-text,
+.cf-sidebar-search .form-control{
+  background: var(--cf-surface);
+  border-color: rgba(181, 206, 215, .75);
+  color: var(--cf-text);
+}
+.cf-sidebar-search .form-control::placeholder{ color: var(--cf-text-muted); }
+.cf-sidebar-search .form-control:focus{
+  box-shadow: 0 0 0 .2rem rgba(88,152,224,.18);
+  border-color: rgba(88,152,224,.55);
+}
+
+.cf-sidebar-section-title{
+  padding: .35rem .9rem;
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: rgba(75, 85, 99, .95);
+}
+
+.cf-sidebar-nav{ padding: .2rem 0 .6rem 0; }
+
+.cf-nav-item{
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  padding: .55rem .9rem;
+  border-right: 3px solid transparent;
+  color: var(--cf-text);
+}
+
+.cf-nav-item:hover{
+  background: var(--cf-hover-bg);
+}
+
+.cf-nav-item.is-active{
+  background: var(--cf-active-bg);
+  border-right-color: var(--cf-primary);
+  color: var(--cf-text);
+}
+
+.cf-nav-item.is-active .cf-nav-icon,
+.cf-nav-item.is-active .cf-nav-arrow{
+  color: var(--cf-primary);
+  opacity: 1;
+}
+
+.cf-nav-icon{ width: 22px; text-align: center; opacity: .95; color: rgba(31,42,55,.85); }
+.cf-nav-text{ flex: 1; font-weight: 650; }
+.cf-nav-arrow{ opacity: .75; color: rgba(75,85,99,.9); }
+
+.cf-sidebar-actions{ padding: .6rem .9rem .9rem .9rem; display: grid; gap: .5rem; }
+.cf-sidebar-actions .btn{
+  border-radius: .6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .45rem;
+  font-weight: 600;
+}
+
+.cf-sidebar-footer{
+/*  padding: .8rem .9rem;
+  border-top: 1px solid rgba(181, 206, 215, .55);
+  background: var(--cf-surface-2);
+*/  
+padding: .6rem .9rem .9rem .9rem; display: grid; gap: .5rem;
+}
+
+/* Logout button should visually match the shortcuts buttons */
+.cf-sidebar-footer .btn{
+  border-radius: .6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .45rem;
+  font-weight: 600;
+}
+
+/* Responsive: במסכים קטנים – הסרגל הופך לבלוק רגיל, והתוכן חוזר לרוחב מלא */
+@media (max-width: 991px) {
+  body.has-cf-sidebar .navbar{ margin-right: 0; }
+
+  .cf-sidebar{
+    position: static;
+    width: 100%;
+    height: auto;
+    border-left: none;
+    border-top: 1px solid rgba(181, 206, 215, .65);
+    top: auto;
+  }
+  .cf-main{ margin-right: 0; }
+
+  body.has-cf-sidebar .navbar{ margin-right: 0; }
+}
+
+/* Keep sidebar visible while scrolling on large screens */
+@media (min-width: 992px) {
+  .sidebar-card { position: sticky; top: 1rem; }
+}
+
+/* KPI cards */
+.kpi-card .kpi-value { font-size: 1.6rem; font-weight: 700; }
+.kpi-card .kpi-label { font-size: .875rem; color: var(--cf-text-muted); }
+
+/* Small helpers */
+.navbar .nav-link { font-weight: 500; }
+.navbar .nav-link.active, .navbar .nav-link:hover { color: var(--cf-primary); }
+.badge-role { background: rgba(88, 152, 224, .08); border: 1px solid rgba(181, 206, 215, .65); color: var(--cf-text); }
+
+/* =========================
+   Bootstrap brand overrides (keep app aligned with logo colors)
+   ========================= */
+
+.text-primary{ color: var(--cf-primary) !important; }
+.bg-primary{ background-color: var(--cf-primary) !important; }
+.border-primary{ border-color: var(--cf-primary) !important; }
+
+.text-success{ color: var(--cf-secondary) !important; }
+.bg-success{ background-color: var(--cf-secondary) !important; }
+.border-success{ border-color: var(--cf-secondary) !important; }
+
+.btn-primary{
+  background-color: var(--cf-primary) !important;
+  border-color: var(--cf-primary) !important;
+}
+.btn-primary:hover,
+.btn-primary:focus{
+  filter: brightness(.95);
+}
+
+.btn-outline-primary{
+  color: var(--cf-primary) !important;
+  border-color: var(--cf-primary) !important;
+}
+.btn-outline-primary:hover,
+.btn-outline-primary:focus{
+  background-color: var(--cf-primary) !important;
+  border-color: var(--cf-primary) !important;
+  color: #fff !important;
+}
+
+.btn-success{
+  background-color: var(--cf-secondary) !important;
+  border-color: var(--cf-secondary) !important;
+}
+.btn-outline-success{
+  color: var(--cf-secondary) !important;
+  border-color: var(--cf-secondary) !important;
+}
+.btn-outline-success:hover,
+.btn-outline-success:focus{
+  background-color: var(--cf-secondary) !important;
+  border-color: var(--cf-secondary) !important;
+  color: #fff !important;
+}
+
+
+/* =========================
+   Dashboard – main page polish
+   ========================= */
+
+.cf-dashboard-hero-row{ align-items: stretch; }
+
+.cf-dashboard-tabs-wrap{
+  min-height: 100%;
+}
+
+.cf-dashboard-tabs{
+  display: inline-flex;
+  gap: .6rem;
+  padding: 0;
+  border-bottom: 0;
+}
+
+.cf-dashboard-tabs .nav-link{
+  min-width: 108px;
+  text-align: center;
+  border: 1px solid rgba(181, 206, 215, .75);
+  border-radius: .7rem;
+  background: var(--cf-surface);
+  color: var(--cf-text);
+  font-weight: 600;
+  padding: .7rem 1.1rem;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, .04);
+}
+
+.cf-dashboard-tabs .nav-link:hover{
+  color: var(--cf-secondary);
+  border-color: rgba(96, 192, 144, .55);
+  background: rgba(96, 192, 144, .07);
+}
+
+.cf-dashboard-tabs .nav-link.active{
+  color: #fff;
+  background: linear-gradient(135deg, #4FBE83, var(--cf-secondary));
+  border-color: var(--cf-secondary);
+  box-shadow: 0 10px 24px rgba(96, 192, 144, .22);
+}
+
+.cf-welcome-card{
+  position: relative;
+  overflow: hidden;
+  min-height: 132px;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdfc 100%);
+}
+
+.cf-welcome-card::before,
+.cf-welcome-card::after{
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  opacity: .9;
+}
+
+.cf-welcome-card::before{
+  top: -8px;
+  left: 26px;
+  width: 150px;
+  height: 120px;
+  background:
+    radial-gradient(circle at 20% 70%, rgba(96, 192, 144, .18) 0 14px, transparent 15px),
+    radial-gradient(circle at 48% 48%, rgba(96, 192, 144, .15) 0 20px, transparent 21px),
+    radial-gradient(circle at 74% 70%, rgba(88, 152, 224, .16) 0 15px, transparent 16px),
+    linear-gradient(125deg, transparent 0 32%, rgba(96, 192, 144, .18) 33% 39%, transparent 40% 100%),
+    linear-gradient(145deg, transparent 0 48%, rgba(96, 192, 144, .14) 49% 53%, transparent 54% 100%);
+}
+
+.cf-welcome-card::after{
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 140px;
+  background: linear-gradient(270deg, rgba(96, 192, 144, 0) 0%, rgba(96, 192, 144, .06) 100%);
+}
+
+.cf-welcome-title{
+  font-size: 2rem;
+  line-height: 1.2;
+  font-weight: 800;
+  color: var(--cf-text);
+}
+
+.cf-welcome-subtitle{
+  font-size: 1rem;
+  color: var(--cf-text-muted);
+}
+
+.cf-kpi-body{
+  min-height: 122px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.cf-kpi-icon{
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, rgba(96, 192, 144, .10) 0%, rgba(96, 192, 144, .18) 100%);
+  color: #157a52;
+  font-size: 1.6rem;
+  flex: 0 0 64px;
+}
+
+.kpi-card .kpi-value {
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.kpi-card .kpi-label {
+  font-size: 1rem;
+  color: var(--cf-text-muted);
+  margin-top: .35rem;
+}
+
+.cf-kpi-accent{
+  width: 42px;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #2da86a, var(--cf-secondary));
+  margin: .8rem auto 0;
+}
+
+.kpi-card:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 14px 34px rgba(16, 24, 40, .08);
+}
+
+.kpi-card,
+.cf-welcome-card,
+.cf-dashboard-tabs .nav-link{
+  transition: all .2s ease;
+}
+
+.cf-btn-soft{
+  background: linear-gradient(180deg, rgba(96, 192, 144, .16) 0%, rgba(96, 192, 144, .22) 100%);
+  border: 1px solid rgba(96, 192, 144, .28);
+  color: #1f5d47;
+}
+
+.cf-btn-soft:hover,
+.cf-btn-soft:focus{
+  background: linear-gradient(180deg, rgba(96, 192, 144, .22) 0%, rgba(96, 192, 144, .30) 100%);
+  border-color: rgba(96, 192, 144, .42);
+  color: #174b39;
+}
+
+.cf-btn-logout{
+  background: linear-gradient(180deg, #ff8d8d 0%, #ff6f6f 100%);
+  border: 1px solid rgba(224, 83, 83, .28);
+  color: #7a1111;
+}
+
+.cf-btn-logout:hover,
+.cf-btn-logout:focus{
+  background: linear-gradient(180deg, #ff7a7a 0%, #ff6262 100%);
+  border-color: rgba(224, 83, 83, .38);
+  color: #5d0909;
+}
+
+@media (max-width: 1199px) {
+  .cf-dashboard-tabs-wrap{
+    justify-content: flex-start !important;
+    align-items: flex-start !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .cf-welcome-title{
+    font-size: 1.55rem;
+  }
+
+  .cf-kpi-body{
+    flex-direction: column-reverse;
+    justify-content: center;
+    text-align: center;
+  }
+}

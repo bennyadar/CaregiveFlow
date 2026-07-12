@@ -1,0 +1,47 @@
+{
+  "employerDetails": {
+    "corporateEmail": "",
+    "employerFirstName": "",
+    "employerLastName": "",
+    "employerId": "",
+    "city": {
+      "dataCode": "",
+      "dataText": ""
+    },
+    "street": {
+      "dataCode": "",
+      "dataText": ""
+    },
+    "homeNum": "",
+    "entryNumber": "",
+    "appartmentNum": "",
+    "zipCode": "",
+    "employerPhone": ""
+  },
+  "foreignWorkerDetails": {
+    "lastName": "",
+    "firstName": "",
+    "dateOfBirth": "",
+    "nowPassport": "",
+    "citizenship": {
+      "dataCode": "",
+      "dataText": ""
+    },
+    "vadlidDate": "",
+    "oldPassport": "",
+    "dateFirstTime": "",
+    "personalStatus": {
+      "dataCode": "",
+      "dataText": ""
+    },
+    "partnerDetails": "",
+    "inIsrael": {
+      "dataCode": "",
+      "dataText": ""
+    },
+    "motherFirstName": "",
+    "fatherFirstName": "",
+    "phoneNumber": "",
+    "otherPhone": ""
+  }
+}
